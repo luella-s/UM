@@ -12,7 +12,6 @@ struct Memory {
 };
 
 /* Helper functions */
-UArray_T copy_array(UArray_T arr);
 void validate_seg(Memory mem, uint32_t segmentID);
 uint32_t segment_mapped(Memory mem, uint32_t segmentID);
 void validate_offset(Memory mem, uint32_t segmentID, uint32_t offset);
@@ -28,7 +27,7 @@ Memory memory_new()
 {
    Memory mem = malloc(sizeof(*mem));
    assert(mem != NULL);
-   mem->seq = Seq_new(100);
+   mem->seq = Seq_new(0);
    assert(mem->seq != NULL);
    mem->freeIDs = Seq_new(0);
    assert(mem->freeIDs != NULL);
@@ -49,16 +48,13 @@ Memory memory_new()
 uint32_t map_segment_memory(Memory mem, uint32_t length)
 {
    assert(mem != NULL);
-   fprintf(stderr, "Length: %u\n", length);
    
    uint32_t segmentID = 0;
    if (Seq_length(mem->freeIDs) == 0) {
       /* Insert uint32_to the next available spot in the Memory Sequence */
       UArray_T arr = UArray_new(length, sizeof(uint32_t));
       assert(arr != NULL);
-      for (uint32_t i = 0; i < length; i++) {
-         *((uint32_t *)UArray_at(arr, i)) = (uint32_t)0;
-      }
+
       segmentID = Seq_length(mem->seq);
       Seq_addhi(mem->seq, (void *)arr);
    } else {
@@ -69,10 +65,9 @@ uint32_t map_segment_memory(Memory mem, uint32_t length)
 
       /* Overwrite free segment with 0s */
       UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
-      UArray_resize(tmp_arr, length);
-      for (uint32_t i = 0; i < length; i++) {
-         *((uint32_t *)UArray_at(tmp_arr, i)) = (uint32_t)0;
-      }
+      UArray_free(&tmp_arr);
+      UArray_T arr = UArray_new(length, sizeof(uint32_t));
+      Seq_put(mem->seq, segmentID, (void *)arr);
    }
 
    return segmentID;
@@ -127,13 +122,8 @@ void copy_segment(Memory mem, uint32_t fromID, uint32_t toID)
 
    /* Copy elements of segment fromID to segment toID */
    UArray_T from_arr = (UArray_T)Seq_get(mem->seq, fromID);
-   UArray_T to_arr = (UArray_T)Seq_get(mem->seq, toID);
-
    uint32_t length = UArray_length(from_arr);
-   UArray_resize(to_arr, length);
-   for (uint32_t i = 0; i < length; i++) {
-      *((uint32_t *)UArray_at(to_arr, i)) = *((uint32_t *)UArray_at(from_arr, i));
-   }
+   *((UArray_T*)Seq_get(mem->seq, toID)) = UArray_copy(from_arr, length);
 }
 
 /*
@@ -187,7 +177,6 @@ void set_word(Memory mem, uint32_t segmentID, uint32_t offset, uint32_t word)
 
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    assert(tmp_arr != NULL);
-   // printf("In set word: %d \n", *((int *)UArray_at(tmp_arr, offset)));
    *((uint32_t *)UArray_at(tmp_arr, offset)) = word;
 }
 

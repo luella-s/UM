@@ -5,6 +5,7 @@
 #include "stdint.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 
 typedef enum Um_register { r0 = 0, r1, r2, r3, r4, r5, r6, r7 } Um_register;
 typedef struct Registers *Registers;

@@ -102,32 +102,17 @@ static inline Um_instruction map_segment(Um_register b, Um_register c)
 
 static inline Um_instruction unmap_segment(Um_register c) 
 {
-        return three_register(DEACTIVATE, 0, 0, c);
+        return three_register(INACTIVATE, 0, 0, c);
 }
 
 static inline Um_instruction output(Um_register c) 
 {
-        return three_register(OUTPUT, 0, 0, c);
+        return three_register(OUT, 0, 0, c);
 }
 
 static inline Um_instruction input(Um_register c) 
 {
-        return three_register(INPUT, 0, 0, c);
-}
-
-static inline Um_instruction input(Um_register c) 
-{
-        return three_register(INPUT, 0, 0, c);
-}
-
-static inline Um_instruction map_segment(Um_register b, Um_register c) 
-{
-        return three_register(ACTIVATE, 0, b, c);
-}
-
-static inline Um_instruction unmap_segment(Um_register b, Um_register c) 
-{
-        return three_register(INACTIVATE, 0, b, c);
+        return three_register(IN, 0, 0, c);
 }
 
 
@@ -220,7 +205,19 @@ void build_map_segment_test(Seq_T stream)
         append(stream, loadval(r2, 0));
         append(stream, loadval(r3, 8));
         append(stream, map_segment(r2, r3));
-        append(stream, unmap_segment(r2, r3));
-        append(stream, output(r1));
+        append(stream, unmap_segment(r2));
+        append(stream, halt());
+}
+
+void build_seg_load_test(Seq_T stream)
+{
+        append(stream, loadval(r1, 0));
+        append(stream, loadval(r4, 8));
+        append(stream, map_segment(r2, r4));
+        append(stream, loadval(r3, 105));
+        append(stream, segmented_store(r2, r1, r3));
+        append(stream, segmented_load(r6, r2, r1));
+        
+        append(stream, output(r6));
         append(stream, halt());
 }

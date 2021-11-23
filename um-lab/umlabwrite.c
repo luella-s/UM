@@ -16,6 +16,7 @@ extern void build_multiply_test(Seq_T stream);
 extern void build_divide_test(Seq_T stream);
 extern void build_nand_test(Seq_T stream);
 extern void build_map_segment_test(Seq_T stream);
+extern void build_seg_load_test(Seq_T stream);
 
 /* The array `tests` contains all unit tests for the lab. */
 
@@ -31,7 +32,8 @@ static struct test_info {
         { "add",                NULL, "", build_add_test },
         { "multiply",           NULL, "", build_multiply_test },
         { "divide",             NULL, "", build_divide_test},
-        { "nand",               NULL, "", build_nand_test }
+        { "nand",               NULL, "", build_nand_test },
+        { "seg-load",               NULL, "", build_seg_load_test} 
 };
 
   

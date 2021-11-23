@@ -26,7 +26,7 @@ Registers registers_new()
    assert(res->arr != NULL);
 
    for (uint32_t i = 0; i < 8; i++) {
-      *((uint32_t *)UArray_at(res->arr, i)) = 0;
+      *((uint32_t *)UArray_at(res->arr, i)) = 0x0;
    }
 
    return res;
@@ -47,6 +47,7 @@ void set_register(Registers res, Um_register rg, uint32_t word)
 {
     assert(res != NULL);
     validate_reg(rg);
+    //fprintf(stderr, "Storing: %u \n", word);
     *((uint32_t *)UArray_at(res->arr, rg)) = word;
 }
 

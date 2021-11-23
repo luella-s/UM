@@ -87,7 +87,7 @@ void execute(Memory mem, Registers reg, Unpacked *u, Program_counter pc)
         input(reg, u->rc);
         
     } else if (u->op == LOADP) {
-        load_program(mem, reg, pc, u->rb, u->rc);
+        pc = load_program(mem, reg, pc, u->rb, u->rc);
         pc = decrement_counter(pc);
         
         

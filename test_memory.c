@@ -35,12 +35,4 @@ int main()
    printf("word at segment %d and offset %d is %d\n", segmentID2, 1, val);
 
    memory_free(new_mem);
-   /*
-   int map_segment(Memory mem, int length);
-   void unmap_segment(Memory mem, int segmentID);
-   void copy_segment(Memory mem, int fromID, int toID);
-   uint32_t get_word(Memory mem, int segmentID, int offset);
-   void set_word(Memory mem, int segmentID, int offset, uint32_t word);
-   void memory_destructor();
-   */
 }
