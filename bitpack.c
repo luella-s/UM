@@ -1,280 +1,255 @@
-/**************************************************************
- *
- *                     bitpack.c
- *
- *     Assignment: COMP40 Homework 4 - arith
- *     Authors:  Luella Sugiman (lsugim01), Yingyang Liang (yliang03)
- *     Date:     10/28/21
- *
- *     Implementation of Bitpack - defines the implementation
- *     of Bitpack functions, which allows manipulation of bits
- *     in a signed and unsigned 64-bit integer.
- *
- **************************************************************/
-
+#include <inttypes.h>
 #include <stdio.h>
-#include <assert.h>
+#include <stdbool.h>
 #include "bitpack.h"
+#include "except.h"
+#include "assert.h"
+
+/* 
+ * What makes things hellish is that C does not define the effects of
+ * a 64-bit shift on a 64-bit value, and the Intel hardware computes
+ * shifts mod 64, so that a 64-bit shift has the same effect as a
+ * 0-bit shift.  The obvious workaround is to define new shift functions
+ * that can shift by 64 bits.
+ */
 
 Except_T Bitpack_Overflow = { "Overflow packing bits" };
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    unsigned 64-bit integer to shift,
-    unsigned 64-bit integer indicating shift amount.
- * Purpose: left-shifts bits of 'num' by 'shift' amount.
- * Error cases:
-    if the 'shift' amount is larger then 64 bits (size of 'num')
-    we exit with CRE.  
- * Returns: the resulting unsigned 64-bit integer from the shift.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-static uint64_t leftshift(uint64_t num, uint64_t shift)
+static inline uint64_t shl(uint64_t word, unsigned bits)
 {
-    assert(shift <= 64);
-    if (shift == 64) {
-        return 0;
-    }
-    return (num << shift);
+        assert(bits <= 64);
+        if (bits == 64)
+                return 0;
+        else
+                return word << bits;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    unsigned 64-bit integer to shift,
-    unsigned 64-bit integer indicating shift amount.
- * Purpose: logically right-shifts bits of 'num' by 'shift' amount,
-    meaning the sign bit does not get carried over.
- * Error cases:
-    if the 'shift' amount is larger then 64 bits (size of 'num')
-    we exit with CRE.  
- * Returns: the resulting unsigned 64-bit integer from the shift.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-static uint64_t logical_rightshift(uint64_t num, uint64_t shift)
+/*
+ * shift R logical
+ */
+static inline uint64_t shr(uint64_t word, unsigned bits)
 {
-    assert(shift <= 64);
-    if (shift == 64) {
-        return 0;
-    }
-    return (num >> shift);
+        assert(bits <= 64);
+        if (bits == 64)
+                return 0;
+        else
+                return word >> bits;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    signed 64-bit integer to shift,
-    unsigned 64-bit integer indicating shift amount.
- * Purpose: arithmetically right-shifts bits of 'num' by 'shift' amount,
-    meaning the sign bit does get carried over.
- * Error cases:
-    if the 'shift' amount is larger then 64 bits (size of 'num')
-    we exit with CRE.  
- * Returns: the resulting signed 64-bit integer from the shift.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-static int64_t arith_rightshift(int64_t num, uint64_t shift)
+/*
+ * shift R arith
+ */
+static inline int64_t sra(uint64_t word, unsigned bits)
 {
-    assert(shift <= 64);
-    if (shift == 64) {
-        /* If num is negative, then shifting by 64 should return -1 */
-        if (num < 0) {
-            return ~0;
-        }
-        /* If num is non-negative, then 1's dont propagate and return 0 */
-        return 0;
-    }
-    return (num >> shift);
+        assert(bits <= 64);
+        if (bits == 64)
+                bits = 63; /* will get all copies of sign bit, 
+                            * which is correct for 64
+                            */
+	/* Warning: following uses non-portable >> on
+	   signed value...see K&R 2nd edition page 206. */
+        return ((int64_t) word) >> bits; 
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    unsigned 64-bit integer to update,
-    width of bits to modify inside 'word',
-    least significant bit of field to update,
-    unsigned 64-bit integer to insert into 'word'.
- * Purpose: inserts 'value' into 'width' bits of 'word', starting at
-    the bit 'lsb'.
- * Error cases: 
-    handled by function calling this one.
- * Returns: the resulting unsigned 64-bit integer from the update. 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-static uint64_t update(uint64_t word, unsigned width, unsigned lsb, 
-    uint64_t value)
+/****************************************************************/
+bool Bitpack_fitss( int64_t n, unsigned width)
 {
-    /* clear field of word */
-    uint64_t clear_mask_h = ~0;
-    clear_mask_h = leftshift(clear_mask_h, (width + lsb));
-    uint64_t clear_mask_l = ~0;
-    clear_mask_l = logical_rightshift(clear_mask_l, (64 - lsb));
-    uint64_t clear_mask = clear_mask_h | clear_mask_l;
-    word = (word & clear_mask);
-    
-    /* put value into cleared field of word */
-    value = leftshift(value, (64 - width));
-    value = logical_rightshift(value, (64 - width - lsb));
-    word = (word | value);
-
-    return word;
+        assert(width <= 64);
+        int64_t narrow = sra(shl(n, 64 - width),
+                             64 - width); 
+        return narrow == n;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    unsigned 64-bit integer to fit,
-    width of bits to fit into.
- * Purpose: checks whether 'n' can be represented by 'width' bits.
- * Error cases:
-    if 'width' is larger then 64 bits (size of 'num'), we exit with CRE.  
- * Returns: resulting check.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 bool Bitpack_fitsu(uint64_t n, unsigned width)
 {
-    assert(width <= 64);
-    uint64_t limit = ~0;
-
-    /* Checking if n fits within limit if width is 64*/
-    if (width == 64) {
-        if (n <= limit) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    limit = ((uint64_t)1 << width) - 1;
-    if (n <= limit) {
-        return true;
-    }
-    return false;
+        assert(width <= 64);
+        /* thanks to Jai Karve and John Bryan  */
+        /* clever shortcut instead of 2 shifts */
+        return shr(n, width) == 0; 
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    signed 64-bit integer to fit,
-    width of bits to fit into.
- * Purpose: checks whether 'n' can be represented by 'width' bits.
- * Error cases:
-    if 'width' is larger then 64 bits (size of 'num'), we exit with CRE.  
- * Returns: resulting check.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-bool Bitpack_fitss(int64_t n, unsigned width)
-{
-    assert(width <= 64);
-    if (width <= 0) {
-        return false;
-    }
-    /* Compute upper and lower limit of the word */
-    int64_t upper_limit = ((uint64_t)1 << (width - 1)) - 1;
-    int64_t lower_limit = (upper_limit * -1) - 1;
+/****************************************************************/
 
-    /* Check if value fits in that range */
-    if (n <= upper_limit && n >= lower_limit) {
-        return true;
-    }
-    return false;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    unsigned 64-bit integer to get field from,
-    number of bits of the field to get,
-    least significant bit of field to get from.
- * Purpose: gets 'width' bits from the 'lsb'-th bit from 'word'.
- * Error cases:
-    if 'width' is larger than 64 bits (size of 'num'), we exit with CRE.
-    if the most significant bit is above 64 (size of 'num'), we exit with CRE. 
- * Returns: field (interpreted as an unsigned integer) obtained from 'word'.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-uint64_t Bitpack_getu(uint64_t word, unsigned width, unsigned lsb)
-{
-    assert(width <= 64);
-    assert((lsb + width) <= 64);
-
-    /* Creating mask */
-    uint64_t mask = ~0;
-    mask = leftshift(mask, (64 - width - lsb));
-    mask = logical_rightshift(mask, 64 - width);
-    mask = leftshift(mask, lsb);
-
-    /* Getting field */
-    uint64_t res = (mask & word);
-    res = logical_rightshift(res, lsb); 
-    return res;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    unsigned 64-bit integer to get field from,
-    number of bits of the field to get,
-    least significant bit of field to get from.
- * Purpose: gets 'width' bits from the 'lsb'-th bit from 'word'.
- * Error cases:
-    if 'width' is larger than 64 bits (size of 'num'), we exit with CRE.
-    if the most significant bit is above 64 (size of 'num'), we exit with CRE. 
- * Returns: field (interpreted as a signed integer) obtained from 'word'.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 int64_t Bitpack_gets(uint64_t word, unsigned width, unsigned lsb)
 {
-    assert(width <= 64);
-    assert((lsb + width) <= 64);
-    
-    /* Creating mask */
-    uint64_t mask = ~0;
-    mask = leftshift(mask, (64 - width - lsb));
-    mask = logical_rightshift(mask, 64 - width);
-    mask = leftshift(mask, lsb);
+        assert(width <= 64);
+        if (width == 0) return 0;    /* avoid capturing unknown sign bit    */
 
-    /* Getting field */
-    int64_t res = (mask & word);
-    res = leftshift(res, (64 - width - lsb));
-    res = arith_rightshift(res, (64 - width));
-    return res;
+        unsigned hi = lsb + width; /* one beyond the most significant bit */
+        assert(hi <= 64);
+        return sra(shl(word, 64 - hi),
+                   64 - width);
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    unsigned 64-bit integer to update,
-    width of bits to modify inside 'word',
-    least significant bit of field to update,
-    unsigned 64-bit integer to insert into 'word'.
- * Purpose: inserts 'value' into 'width' bits of 'word', starting at
-    the bit 'lsb'.
- * Error cases:
-    if 'width' is larger than 64 bits (size of 'num'), we exit with CRE.
-    if the most significant bit is above 64 (size of 'num'), we exit with CRE. 
- * Returns: resulting 'word'.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-uint64_t Bitpack_newu(uint64_t word, unsigned width, unsigned lsb, 
-    uint64_t value)
+uint64_t Bitpack_getu(uint64_t word, unsigned width, unsigned lsb)
 {
-    assert(width <= 64);
-    assert((lsb + width) <= 64);
-
-    if (Bitpack_fitsu(value, width) == false) {
-        RAISE(Bitpack_Overflow);
-    }
-    
-    return update(word, width, lsb, value);
+        assert(width <= 64);
+        unsigned hi = lsb + width; /* one beyond the most significant bit */
+        assert(hi <= 64);
+        /* different type of right shift */
+        return shr(shl(word, 64 - hi),
+                   64 - width); 
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Arguments:
-    unsigned 64-bit integer to update,
-    width of bits to modify inside 'word',
-    least significant bit of field to update,
-    signed 64-bit integer to insert into 'word'
- * Purpose: inserts 'value' into 'width' bits of 'word', starting at
-    the bit 'lsb'.
- * Error cases:
-    if 'width' is larger than 64 bits (size of 'num'), we exit with CRE.
-    if the most significant bit is above 64 (size of 'num'), we exit with CRE. 
- * Returns: resulting 'word'.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-uint64_t Bitpack_news(uint64_t word, unsigned width, unsigned lsb, 
-    int64_t value)
+/****************************************************************/
+uint64_t Bitpack_newu(uint64_t word, unsigned width, unsigned lsb,
+                      uint64_t value)
 {
-    assert(width <= 64);
-    assert((lsb + width) <= 64);
-
-    if (Bitpack_fitss(value, width) == false) {
-        RAISE(Bitpack_Overflow);
-    }
-    
-    return update(word, width, lsb, value);
+        assert(width <= 64);
+        unsigned hi = lsb + width; /* one beyond the most significant bit */
+        assert(hi <= 64);
+        if (!Bitpack_fitsu(value, width))
+                RAISE(Bitpack_Overflow);
+        return shl(shr(word, hi), hi)                 /* high part */
+                | shr(shl(word, 64 - lsb), 64 - lsb)  /* low part  */
+                | (value << lsb);                     /* new part  */
 }
 
-extern Except_T Bitpack_Overflow;
+uint64_t Bitpack_news(uint64_t word, unsigned width, unsigned lsb,
+                      int64_t value)
+{
+        assert(width <= 64);
+        if (!Bitpack_fitss(value, width))
+                RAISE(Bitpack_Overflow);
+        /* thanks to Michael Sackman and Gilad Gray */
+        return Bitpack_newu(word, width, lsb, Bitpack_getu(value, width, 0));
+}
+
+
+/****************************************************************
+ * undeclared exported test code                          
+ *****************************************************************/
+#include "bitpack-tests.h"
+#include "fmt.h"
+
+typedef void (*Bitpack_testfun)(const char *test,
+                                Bitpack_flags flags,
+                                bool passed,
+                                void *cl);
+
+void Bitpack_run_tests(bool print, Bitpack_testfun test, void *cl)
+{
+#define FLAG(P,F) ((P) ? (Bitpack_ ## F) : 0)
+#define FL(S64) (FLAG(S64, s64) | FLAG(w==0, w0) | FLAG(w==64, w64))
+#define CHECK(E, S64)                                                   \
+        TRY  test(#E, FL(S64), (E), cl);                                \
+        ELSE test(#E " (raised exception)", FL(S64), false, cl);        \
+        END_TRY
+#define NCHECK(E, SE, S64)                              \
+        TRY  test(Fmt_string SE, FL(S64), (E), cl);     \
+        ELSE test(Fmt_string SE, FL(S64), false, cl);   \
+        END_TRY
+#define FITS64 (w == 64) /* fitsx causes 64-bit shift */
+#define GET64  (w == 0)  /* getx  causes 64-bit shift */
+#define NEW64 (FITS64 || lsb == 0 || w + lsb == 64)
+#define NEW(E,F) TRY (void)(E);                                         \
+        ELSE test(#E " (raised exception)", FL(NEW64), false, cl);      \
+        goto F;                                                         \
+        END_TRY;                                                        \
+        uint64_t new = (E)
+        uint64_t words[]  = { 0U, ~0U, 0xfeedfacedeadbeef };
+        unsigned widths[] = {0, 6, 8, 64};  
+        unsigned lsbs[]   = {16, 0, 99};  /* 99 is placeholder for 64 - lsb */
+        /* all test values fit in 6 bits */
+        int64_t signs[]   = { 0xfffffffffffffffe, 7, 0, 11, -8, -11 };      
+        uint64_t unsigns[] = { 0x33, 7, 0, 11, 1 };      
+
+/****************************************************************************/
+/* The following is terrible and may melt your eyes.  You have been warned! */
+/****************************************************************************/
+
+#define NELEMS(A) (sizeof(A) / sizeof((A)[0])) /* standard macro */
+        /* test all combination of word, w, lsb, both signed and unsigned */
+        for (volatile unsigned i = 0; i < NELEMS(words); i++) {
+                uint64_t old = words[i];
+                for (volatile unsigned windex = 0;
+                     windex < NELEMS(widths);
+                     windex++) {
+                        unsigned w = widths[windex];
+                        for (volatile unsigned lindex = 0;
+                             lindex < NELEMS(lsbs);
+                             lindex++) {
+                                volatile unsigned lsb
+                                        = (lsbs[lindex] == 99) ? 64 - w
+                                                               : lsbs[lindex];
+
+                                /* signed tests */
+                                for (volatile unsigned j = 0;
+                                     j < NELEMS(signs);
+                                     j++) {
+                                        if ((signs[j] == 0 || w > 0)
+                                            && w + lsb <= 64) { /* sensible only */
+                                                NEW(Bitpack_news(old, w, lsb,
+                                                                 signs[j]),
+                                                    nexts);
+                                                if (print) {
+                                                        printf("-- news(0x%016"
+                                                               PRIx64
+                                                               ", %u, %u, %4"
+                                                               PRId64
+                                                               " (0x%04"
+                                                               PRIx64
+                                                               ") == 0x%016"
+                                                               PRIx64 "\n",
+                                                               old, w, lsb,
+                                                               signs[j],
+                                                               signs[j],
+                                                               new);
+                                                        printf("-- Recovered %"
+                                                               PRId64
+                                                               " from 0x%016"
+                                                               PRIx64
+                                                               " (was %"
+                                                               PRId64")\n",
+                                                               Bitpack_gets(new,
+                                                                            w,
+                                                                            lsb),
+                                                               new,
+                                                               signs[j]);
+                                                }
+                                                /* test old parts are unchanged and new part is signs[j] */
+                                                NCHECK(Bitpack_getu(new, lsb, 0) == Bitpack_getu(old, lsb, 0),
+                                                       ("Bitpack_getu(0x%W, %d, 0) == Bitpack_getu(0x%W, %d, 0)",
+                                                        new, lsb, old, lsb),
+                                                       GET64||NEW64);
+                                                NCHECK(Bitpack_getu(new, 64 - w - lsb, w + lsb) ==
+                                                       Bitpack_getu(old, 64 - w - lsb, w + lsb),
+                                                       ("Bitpack_getu(0x%W, %d, %d) == Bitpack_getu(0x%W, %d, %d)",
+                                                        new, 64 - w - lsb, w + lsb, old, 64 - w - lsb, w + lsb),
+                                                       GET64||NEW64);
+                                                NCHECK(Bitpack_gets(new, w, lsb) == signs[j],
+                                                       ("Bitpack_gets(0x%W, %d, %d) == %d", new, w, lsb, signs[j]),
+                                                       GET64||NEW64);
+                                        nexts: (void)0;
+                                        }
+                                }
+                 
+                                /* unsigned tests */
+                                for (volatile unsigned j = 0; j < NELEMS(unsigns); j++) {
+                                        if ((unsigns[j] == 0 || w > 0) && w + lsb <= 64) {
+                                                NEW(Bitpack_newu(old, w, lsb, unsigns[j]), nextu);
+                                                if (print) {
+                                                        printf("-- newu(0x%016" PRIx64 ", %u, %u, %4" PRIu64
+                                                               " (0x%04" PRIx64 ") == 0x%016" PRIx64 "\n",
+                                                               old, w, lsb, unsigns[j], unsigns[j], new);
+                                                }
+                                                /* test old parts are unchanged and new part is unsigns[j] */
+                                                NCHECK(Bitpack_getu(new, lsb, 0) == Bitpack_getu(old, lsb, 0),
+                                                       ("Bitpack_getu(0x%W, %d, 0) == Bitpack_getu(0x%W, %d, 0)",
+                                                        new, lsb, old, lsb),
+                                                       GET64||NEW64);
+                                                NCHECK(Bitpack_getu(new, 64 - w - lsb, w + lsb) ==
+                                                       Bitpack_getu(old, 64 - w - lsb, w + lsb),
+                                                       ("Bitpack_getu(0x%W, %d, %d) == Bitpack_getu(0x%W, %d, %d)",
+                                                        new, 64 - w - lsb, w + lsb, old, 64 - w - lsb, w + lsb),
+                                                       GET64||NEW64);
+                                                NCHECK(Bitpack_getu(new, w, lsb) == unsigns[j],
+                                                       ("Bitpack_gets(0x%W, %d, %d) == %u", new, w, lsb, unsigns[j]),
+                                                       GET64||NEW64);
+                                        nextu: (void)0;
+                                        }
+                                }
+                        }
+                }
+        }
+}

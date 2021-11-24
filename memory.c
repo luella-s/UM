@@ -51,12 +51,17 @@ uint32_t map_segment_memory(Memory mem, uint32_t length)
    
    uint32_t segmentID = 0;
    if (Seq_length(mem->freeIDs) == 0) {
-      /* Insert uint32_to the next available spot in the Memory Sequence */
+      /* Insert into the next available spot in the Memory Sequence */
       UArray_T arr = UArray_new(length, sizeof(uint32_t));
       assert(arr != NULL);
 
+      for (int i = 0; i < (int)length; i++) {
+         *((uint32_t *)UArray_at(arr, i)) = (uint32_t)0x0;
+      }
+
       segmentID = Seq_length(mem->seq);
       Seq_addhi(mem->seq, (void *)arr);
+      // fprintf(stderr, "NEW segment length: %d\n", UArray_length(arr));
    } else {
       /* Free removed ID in freeIDs */
       uint32_t *idPtr = (uint32_t *)Seq_remhi(mem->freeIDs);
@@ -68,6 +73,7 @@ uint32_t map_segment_memory(Memory mem, uint32_t length)
       UArray_free(&tmp_arr);
       UArray_T arr = UArray_new(length, sizeof(uint32_t));
       Seq_put(mem->seq, segmentID, (void *)arr);
+      // fprintf(stderr, "NEW segment length: %d\n", UArray_length(arr));
    }
 
    return segmentID;
@@ -123,7 +129,13 @@ void copy_segment(Memory mem, uint32_t fromID, uint32_t toID)
    /* Copy elements of segment fromID to segment toID */
    UArray_T from_arr = (UArray_T)Seq_get(mem->seq, fromID);
    uint32_t length = UArray_length(from_arr);
-   *((UArray_T*)Seq_get(mem->seq, toID)) = UArray_copy(from_arr, length);
+   // fprintf(stderr, "SUPPOSED COPIED segment length: %d\n", length);
+
+   // UArray_T to_arr = (UArray_T)Seq_get(mem->seq, toID);
+   // UArray_free(&to_arr); //?
+
+   *((UArray_T *)Seq_get(mem->seq, toID)) = *((UArray_T *)UArray_copy(from_arr, length));
+   // fprintf(stderr, "COPIED segment length: %d\n", UArray_length((UArray_T)Seq_get(mem->seq, toID)));
 }
 
 /*
@@ -229,7 +241,7 @@ void memory_free(Memory mem)
 */
 void validate_seg(Memory mem, uint32_t segmentID)
 {
-   assert(segmentID <= (uint32_t)Seq_length(mem->seq) - 1);
+   assert(segmentID < (uint32_t)Seq_length(mem->seq));
 }
 
 /*
@@ -261,5 +273,5 @@ uint32_t segment_mapped(Memory mem, uint32_t segmentID)
 */
 void validate_offset(Memory mem, uint32_t segmentID, uint32_t offset)
 {
-   assert(offset <= (uint32_t)UArray_length((UArray_T)Seq_get(mem->seq, segmentID)));
+   assert(offset < (uint32_t)UArray_length((UArray_T)Seq_get(mem->seq, segmentID)));
 }

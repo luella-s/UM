@@ -23,7 +23,7 @@ void map_segment(Memory mem, Registers reg, Um_register rb, Um_register rc);
 void unmap_segment(Memory mem, Registers reg, Um_register rc);
 void output(Registers reg, Um_register rc);
 void input(Registers reg, Um_register rc);
-Program_counter load_program(Memory mem, Registers reg, Program_counter pc, Um_register rb, Um_register rc);
+uint32_t *load_program(Memory mem, Registers reg, uint32_t *pc, Um_register rb, Um_register rc);
 void load_value(Registers reg, Um_register ra, uint32_t value);
 
 #endif

@@ -46,7 +46,7 @@ Um_instruction loadval(unsigned ra, unsigned val)
         uint32_t word = 0x0;
         word = Bitpack_newu(word, 4, 28, LV);
         word = Bitpack_newu(word, 3, 25, ra);
-        word = Bitpack_newu(word, 25, 0, val);
+        word = Bitpack_newu(word, 25, 0, (uint32_t)val);
         return word;
 }
 
@@ -115,7 +115,10 @@ static inline Um_instruction input(Um_register c)
         return three_register(IN, 0, 0, c);
 }
 
-
+static inline Um_instruction load_program(Um_register b, Um_register c) 
+{
+        return three_register(LOADP, 0, b, c);
+}
 
 
 
@@ -149,9 +152,8 @@ void build_halt_test(Seq_T stream)
         append(stream, halt());
 }
 
-void build_verbose_halt_test(Seq_T stream)
+void build_output_load_val_test(Seq_T stream)
 {
-        append(stream, halt());
         append(stream, loadval(r1, 'B'));
         append(stream, output(r1));
         append(stream, loadval(r1, 'a'));
@@ -162,6 +164,7 @@ void build_verbose_halt_test(Seq_T stream)
         append(stream, output(r1));
         append(stream, loadval(r1, '\n'));
         append(stream, output(r1));
+        append(stream, halt());
 }
 
 void build_add_test(Seq_T stream)
@@ -170,7 +173,7 @@ void build_add_test(Seq_T stream)
         append(stream, loadval(r3, 46));
         append(stream, add(r1, r2, r3));
         append(stream, output(r1));
-        append(stream, halt());
+        // append(stream, halt());
 }
 
 void build_multiply_test(Seq_T stream)
@@ -179,7 +182,7 @@ void build_multiply_test(Seq_T stream)
         append(stream, loadval(r3, 10));
         append(stream, multiply(r1, r2, r3));
         append(stream, output(r1));
-        append(stream, halt());
+        // append(stream, halt());
 }
 
 void build_divide_test(Seq_T stream)
@@ -193,19 +196,18 @@ void build_divide_test(Seq_T stream)
 
 void build_nand_test(Seq_T stream)
 {
-        append(stream, loadval(r2, 0xFFFFFF));
-        append(stream, loadval(r3, 1));
-        append(stream, bitwise_nand(r1, r2, r3));
-        append(stream, output(r1));
-        append(stream, halt());
+        append(stream, loadval(r2, 0)); //11111s
+        append(stream, loadval(r0, 0));
+        append(stream, bitwise_nand(r1, r2, r0));
+        append(stream, bitwise_nand(r3, r1, r1));
+        append(stream, output(r3)); //should be 0
 }
 
 void build_map_segment_test(Seq_T stream)
 {
-        append(stream, loadval(r2, 0));
         append(stream, loadval(r3, 8));
         append(stream, map_segment(r2, r3));
-        append(stream, unmap_segment(r2));
+        append(stream, output(r2)); //should be 0 (null)
         append(stream, halt());
 }
 
@@ -217,7 +219,75 @@ void build_seg_load_test(Seq_T stream)
         append(stream, loadval(r3, 105));
         append(stream, segmented_store(r2, r1, r3));
         append(stream, segmented_load(r6, r2, r1));
+        append(stream, output(r6)); //should be 105
+        append(stream, halt());
+}
+
+void build_unmap_seg_test(Seq_T stream)
+{
+        append(stream, loadval(r3, 8));
+        append(stream, map_segment(r2, r3));
+        append(stream, unmap_segment(r2));
+        append(stream, map_segment(r4, r3));
+        append(stream, output(r2)); //r2 should be r4
+        append(stream, output(r4));
+        append(stream, halt());
+}
+
+//
+
+void build_seg_store_test(Seq_T stream)
+{
+        append(stream, loadval(r3, 8));
+        append(stream, map_segment(r2, r3));
+        append(stream, loadval(r3, 'D'));
+        append(stream, segmented_store(r2, r1, r3));
+        append(stream, segmented_load(r6, r2, r1));
         
-        append(stream, output(r6));
+        append(stream, output(r6)); //should be D
+        append(stream, halt());
+}
+
+void build_cond_move_test(Seq_T stream)
+{
+        append(stream, loadval(r3, '1'));
+        append(stream, loadval(r2, 'd'));
+        append(stream, conditional_move(r1, r2, r3));
+        append(stream, output(r1)); //should be 'd'
+        append(stream, halt());
+}
+
+void build_input_test(Seq_T stream)
+{
+        append(stream, input(r3));
+        append(stream, output(r3)); //should be input
+        append(stream, halt());
+}
+
+void build_load_program_test(Seq_T stream)
+{
+        append(stream, loadval(r5, 4));
+        append(stream, map_segment(r4, r5));
+
+        append(stream, loadval(r3, '1'));
+        append(stream, loadval(r2, 'd'));
+        append(stream, conditional_move(r1, r2, r3));
+        append(stream, output(r1));
+
+        append(stream, loadval(r6, 0));
+        append(stream, load_program(r4, r6));
+}
+
+void build_load_program_jump_test(Seq_T stream)
+{
+        append(stream, loadval(r0, 0));
+        append(stream, loadval(r1, 7));
+        append(stream, load_program(r0, r1));
+
+        append(stream, loadval(r3, '1'));
+        append(stream, loadval(r2, 'd'));
+        append(stream, conditional_move(r1, r2, r3));
+        append(stream, output(r1));
+
         append(stream, halt());
 }

@@ -24,17 +24,11 @@ Unpacked *unpack_rest(uint32_t word)
     assert(u != NULL);
 
     u->op = Bitpack_getu(word, OP_BITS, 32 - OP_BITS);
-        //fprintf(stderr, "Op: %d\n", u->op);
-        //fprintf(stderr, "Value: %x\n", word);
     validate_op(u->op);
 
     u->ra = Bitpack_getu(word, REG_BITS, REG_BITS * 2);
     u->rb = Bitpack_getu(word, REG_BITS, REG_BITS);
     u->rc = Bitpack_getu(word, REG_BITS, 0);
-
-    // fprintf(stderr, "R1: %x\n", u->ra);
-    // fprintf(stderr, "R2: %x\n", u->rb);
-    // fprintf(stderr, "R3: %x\n", u->rc);
 
     validate_reg(u->ra);
     validate_reg(u->rb);
@@ -51,12 +45,7 @@ Unpacked *unpack_loadval(uint32_t word)
     u->op = LV;
     u->ra = Bitpack_getu(word, REG_BITS, 32 - OP_BITS - REG_BITS);
     u->value = (uint32_t) Bitpack_getu(word, 32 - OP_BITS - REG_BITS, 0);
-    //fprintf(stderr, "Value: %x\n", u->value);
     validate_reg(u->ra);
-
-    //fprintf(stderr, "Op: %d\n", u->op);
-    // fprintf(stderr, "R1: %x\n", u->ra);
-    // fprintf(stderr, "Value: %x\n", u->value);
 
     return u;
 }

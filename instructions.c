@@ -106,7 +106,7 @@ void map_segment(Memory mem, Registers reg, Um_register rb, Um_register rc)
     validate_registers(rc);
 
     uint32_t segmentID = map_segment_memory(mem, get_register(reg, rc));
-    set_register(reg, rb, segmentID); //length of file
+    set_register(reg, rb, segmentID);
 }
 
 void unmap_segment(Memory mem, Registers reg, Um_register rc)
@@ -122,7 +122,6 @@ void unmap_segment(Memory mem, Registers reg, Um_register rc)
 void output(Registers res, Um_register rc)
 {
     assert(res != NULL);
-    assert(output != NULL);
     validate_registers(rc);
     
     assert(get_register(res, rc) <= 255);
@@ -136,15 +135,24 @@ void input(Registers res, Um_register rc)
     set_register(res, rc, c);
 }
 
-Program_counter load_program(Memory mem, Registers reg, Program_counter pc, Um_register rb, Um_register rc)
+uint32_t *load_program(Memory mem, Registers reg, uint32_t *pc, Um_register rb, Um_register rc)
 {
     assert(mem != NULL);
+    assert(reg != NULL);
     validate_registers(rb);
+    validate_registers(rc);
 
     if (get_register(reg, rb) != 0) {
+        // fprintf(stderr, "new from %d to %d\n", get_register(reg, rb), get_register(reg, rc));
         copy_segment(mem, get_register(reg, rb), 0);
     }
-    pc = set_counter(pc, get_register(reg, rc));
+
+    // pc = set_counter(pc, get_register(reg, rc));
+    *pc = get_register(reg, rc);
+    // fprintf(stderr, "segmont 0 length: %d\nnew counter: %d\n", get_length_segment(mem, 0), *pc);
+
+    assert(*pc < get_length_segment(mem, 0));
+
     return pc;
 }
 
@@ -158,14 +166,14 @@ void load_value(Registers reg, Um_register ra, uint32_t value)
 
 void validate_registers(Um_register r)
 {
-    assert(r >= 0 && r <= 8);
+    assert(r >= 0 && r <= 7);
 }
 
 uint32_t validate_char(uint32_t i)
 {
-    assert(i <= 255);
     if (i == (uint32_t)EOF) {
-        return (uint32_t) ~0;
+        return ~(uint32_t)0x0;
     }
+    assert(i <= 255);
     return (uint32_t) i;
 }

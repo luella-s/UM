@@ -13,13 +13,6 @@ Program_counter increment_counter(Program_counter pc)
     return pc;
 }
 
-Program_counter decrement_counter(Program_counter pc)
-{
-    pc->count -= 1;
-    return pc;
-}
-
-
 Program_counter set_counter(Program_counter pc, uint32_t val)
 {
     pc->count = val;

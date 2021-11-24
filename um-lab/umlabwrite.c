@@ -17,6 +17,13 @@ extern void build_divide_test(Seq_T stream);
 extern void build_nand_test(Seq_T stream);
 extern void build_map_segment_test(Seq_T stream);
 extern void build_seg_load_test(Seq_T stream);
+extern void build_output_load_val_test(Seq_T stream);
+extern void build_unmap_seg_test(Seq_T stream);
+extern void build_seg_store_test(Seq_T stream);
+extern void build_cond_move_test(Seq_T stream);
+extern void build_input_test(Seq_T stream);
+extern void build_load_program_test(Seq_T stream);
+extern void build_load_program_jump_test(Seq_T stream);
 
 /* The array `tests` contains all unit tests for the lab. */
 
@@ -27,13 +34,20 @@ static struct test_info {
         /* writes instructions into sequence */
         void (*build_test)(Seq_T stream);
 } tests[] = {
-        { "halt",               NULL, "", build_halt_test },
-        { "halt-verbose",       NULL, "", build_verbose_halt_test },
-        { "add",                NULL, "", build_add_test },
-        { "multiply",           NULL, "", build_multiply_test },
-        { "divide",             NULL, "", build_divide_test},
-        { "nand",               NULL, "", build_nand_test },
-        { "seg-load",               NULL, "", build_seg_load_test} 
+        { "halt",               NULL, "halt.1", build_halt_test },
+        { "add",                NULL, "add.1", build_add_test },
+        { "multiply",           NULL, "multiply.1", build_multiply_test },
+        { "divide",             NULL, "divide.1", build_divide_test},
+        { "nand",               NULL, "nand.1", build_nand_test },
+        { "seg-load",           NULL, "seg-load.1", build_seg_load_test},
+        { "cond-move",          NULL, "cond-move.1", build_cond_move_test},
+        { "seg-store",          NULL, "seg-store.1", build_seg_store_test},
+        { "map-seg",            NULL, "map-seg.1", build_map_segment_test},
+        { "unmap-seg",          NULL, "unmap-seg.1", build_unmap_seg_test},
+        { "output-load-val",    NULL, "output.1", build_output_load_val_test},
+        { "input",              "input.0", "input.1", build_input_test},
+        { "load-program",       NULL, "load-program.1", build_load_program_test},
+        { "load-program-jump",  NULL, "load-program-jump.1", build_load_program_jump_test}
 };
 
   

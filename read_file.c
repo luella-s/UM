@@ -15,7 +15,6 @@ static FILE *open_or_abort(char *filename, char *mode);
     If the file isn't successfully opened, we exit with CRE.
  * Returns: void
  */
-
 void read_file(Memory mem, char *filename)
 {
     FILE *input = open_or_abort(filename, "r");
@@ -49,7 +48,10 @@ static FILE *open_or_abort(char *filename, char *mode)
      * Open a file stream to the given file. Then, check if the file is
      * successfully opened. If not, exit the program.
      */
-    assert(fp != NULL);
+    if (fp == NULL) {
+        fprintf(stderr, "%s: No such file or directory\n", filename);
+        exit(EXIT_FAILURE);
+    }
 
     return fp;
 }
