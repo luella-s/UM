@@ -23,7 +23,7 @@ int main()
     // map_segment_memory(mem, 8);
     // set_word(mem, 0, 0, 589);
     
-   /* test_cond_move(reg);
+    /*test_cond_move(reg);
     test_seg_load(mem, reg);
     test_seg_store(mem, reg);
     test_add(reg);
@@ -32,12 +32,12 @@ int main()
     test_bitwise_nand(reg);
     test_map_segment(mem, reg);
     test_unmap_segment(mem, reg);
-    test_input_output(reg);
+    test_input_output(reg); */
     test_load_program(mem, reg);
-    test_load_val(reg);
+    /*test_load_val(reg);
     test_halt(mem, reg); */
 
-    test_freeIDs(mem, reg);
+    //test_freeIDs(mem, reg);
     halt(mem, reg);
 }
 
@@ -144,14 +144,28 @@ void test_input_output(Registers reg){
 
 void test_load_program(Memory mem, Registers reg)
 {
-    set_register(reg, r1, 8);
-    map_segment(mem, reg, r1, r2);
-
-    set_word(mem, get_register(reg, r2), 0, 4923);
+    load_value(reg, r1, 8);
+    map_segment(mem, reg, r2, r1);
+    //map seg 0 r2 = 0
+    load_value(reg, r4, 10);
+    map_segment(mem, reg, r3, r4);
+    // map seg 1 r3 = 1
     
-    load_program(mem, get_register(reg, r2));
+    
+    load_value(reg, r7, 2);
+    load_value(reg, r6, 70);
+    segmented_store(mem, reg, r3, r7, r6);
+    //store value in r6 at 1, 2
+    
+    load_program(mem, reg, r3, r7);
+    //load segmetn 1 into segment 0
+    
+    //load value at 0, 2 into r0
+    segmented_load(mem, reg, r5, r3, r7);
+    output(reg, r5);
 
-    printf("Load Program:\n0 Segment: %u\n\n", get_word(mem, 0, 0));
+    printf("Load Program: At (0, 2): %u\n\n", get_word(mem, 0, 2));
+    printf("Load Program: At (1, 2): %u\n\n", get_word(mem, 1, 2));
 }
 
 void test_load_val(Registers reg){

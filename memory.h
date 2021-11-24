@@ -20,7 +20,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
-typedef struct Memory *Memory;
+typedef struct Memory {
+   Seq_T seq;
+   Seq_T freeIDs;
+}*Memory;
 
 /*
  * Arguments: N/A

@@ -44,12 +44,9 @@ void run_program(Memory mem, Registers reg, uint32_t *pc)
     while (*pc < get_length_segment(mem, 0)) {
         uint32_t word = get_word(mem, 0, *pc);
         Unpacked *u = unpack(word);
-
-        fprintf(stderr, "Counter: %u, Length: %u\n", *pc, get_length_segment(mem, 0));
+        //fprintf(stderr, "%d, Word: %x\n", *pc, word);
+        //fprintf(stderr, "Counter: %u, Length: %u\n", *pc, get_length_segment(mem, 0));
         *pc += 1;
-
-        // fprintf(stderr, "Word: %u\n", word);
-
         execute(mem, reg, u, pc);
         free(u);
     }
@@ -82,7 +79,7 @@ void execute(Memory mem, Registers reg, Unpacked *u, uint32_t *pc)
     } else if (u->op == IN) {
         input(reg, u->rc);
     } else if (u->op == LOADP) {
-        pc = load_program(mem, reg, pc, u->rb, u->rc);
+        *pc = load_program(mem, reg, u->rb, u->rc);
     } else if (u->op == LV) {
         load_value(reg, u->ra, u->value);
     }

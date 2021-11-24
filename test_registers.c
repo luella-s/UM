@@ -11,5 +11,5 @@ int main(int argc, char *argv[])
     uint32_t tmp = get_register(reg, r0);
     printf("%u\n", tmp);
     registers_free(reg);
-    free(reg);
+    //free(reg);
 }
