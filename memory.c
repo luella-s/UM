@@ -1,3 +1,16 @@
+/**************************************************************
+ *
+ *                     memory.c
+ *
+ *     Assignment: COMP40 Homework 6 - UM
+ *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
+ *     Date:     11/24/21
+ *
+ *     Implementation of Memory module - implements segmented memory
+ *     data structure.
+ *
+ **************************************************************/
+
 #include "memory.h"
 #include <stdio.h>
 
