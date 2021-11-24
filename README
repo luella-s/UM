@@ -1,0 +1,43 @@
+/**************************************************************
+ *
+ *                     README
+ *
+ *     Assignment: COMP40 Homework 6 - UM
+ *     Authors:  Luella Sugiman (lsugim01), Unna
+ *     Date:     11/24/21
+ *
+ **************************************************************/
+
+/* * * * * * * * * * Acknowledgements * * * * * * * * * */
+
+- Help from TAs during office hours
+- Lecture slides
+
+/* * * * * * * * * * Correctly Implemented * * * * * * * * * */
+
+
+/* * * * * * * * * Departures from Design * * * * * * * * */
+
+1. Structure to represent Segments 
+2. Structure to hold available segment IDs
+2. Additional Program_Counter module
+3. 
+
+/* * * * * * * * * * Architecture * * * * * * * * * */
+
+
+    
+/* * * * * * * * * * 50 million instructions * * * * * * * * * */
+
+It takes our UM 
+
+/* * * * * * * * * * Hours spent * * * * * * * * * */
+
+Hours spent analyzing:
+3h
+
+Hours spent preparing design:
+4h
+
+Hours spent solving problems:
+22h
