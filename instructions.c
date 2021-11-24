@@ -23,7 +23,6 @@ void segmented_load(Memory mem, Registers reg, Um_register ra, Um_register rb, U
     validate_registers(ra);
     validate_registers(rb);
     validate_registers(rc);
-
     uint32_t new_word = get_word(mem, get_register(reg, rb), get_register(reg, rc));
     set_register(reg, ra, new_word);
 }
@@ -57,13 +56,10 @@ void multiplication(Registers reg, Um_register ra, Um_register rb, Um_register r
     validate_registers(ra);
     validate_registers(rb);
     validate_registers(rc);
-    //fprintf(stderr, "mult: %u, %u \n",get_register(reg, rb), get_register(reg, rc));
     uint32_t v1 = get_register(reg, rb);
     uint32_t v2 = get_register(reg, rc);
     uint32_t val = v1 * v2;  
-    //fprintf(stderr, "mval: %x ", val);
     set_register(reg, ra, val);
-    //fprintf(stderr, "got from reg: %u \n \n", get_register(reg, ra));
 }
  
 void division(Registers reg, Um_register ra, Um_register rb, Um_register rc){
@@ -71,10 +67,11 @@ void division(Registers reg, Um_register ra, Um_register rb, Um_register rc){
     validate_registers(ra);
     validate_registers(rb);
     validate_registers(rc);
-    
-    //fprintf(stderr, "division: %x, %x \n", get_register(reg, rb), get_register(reg, rc));
+
     assert(get_register(reg, rc) != 0);
-    uint32_t val = get_register(reg, rb) / get_register(reg, rc); 
+    uint32_t v1 = get_register(reg, rb);
+    uint32_t v2 = get_register(reg, rc);
+    uint32_t val = v1 / v2; 
     set_register(reg, ra, val);
 }
 
@@ -84,8 +81,11 @@ void bitwise_nand(Registers reg, Um_register ra, Um_register rb, Um_register rc)
     validate_registers(ra);
     validate_registers(rb);
     validate_registers(rc);
-
-    uint32_t val = ~(get_register(reg, rb) & get_register(reg, rc));
+    
+    uint32_t v1 = get_register(reg, rb);
+    uint32_t v2 = get_register(reg, rc);
+    
+    uint32_t val = ~(v1 & v2);
     set_register(reg, ra, val);
 }
 
@@ -135,25 +135,21 @@ void input(Registers res, Um_register rc)
     set_register(res, rc, c);
 }
 
-uint32_t *load_program(Memory mem, Registers reg, uint32_t *pc, Um_register rb, Um_register rc)
+uint32_t load_program(Memory mem, Registers reg, Um_register rb, Um_register rc)
 {
     assert(mem != NULL);
     assert(reg != NULL);
     validate_registers(rb);
     validate_registers(rc);
 
+    uint32_t pc_val;
     if (get_register(reg, rb) != 0) {
-        // fprintf(stderr, "new from %d to %d\n", get_register(reg, rb), get_register(reg, rc));
         copy_segment(mem, get_register(reg, rb), 0);
     }
+    pc_val = get_register(reg, rc);
+    assert(pc_val < get_length_segment(mem, 0));
 
-    // pc = set_counter(pc, get_register(reg, rc));
-    *pc = get_register(reg, rc);
-    // fprintf(stderr, "segmont 0 length: %d\nnew counter: %d\n", get_length_segment(mem, 0), *pc);
-
-    assert(*pc < get_length_segment(mem, 0));
-
-    return pc;
+    return pc_val;
 }
 
 void load_value(Registers reg, Um_register ra, uint32_t value)

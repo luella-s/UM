@@ -64,13 +64,13 @@ all: registers memory instructions unpack read_file um
 
 ## Linking step (.o -> executable program)
 
-registers: registers.o
+registers: registers.o test_registers.o
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
-memory: memory.o 
+memory: memory.o test_memory.o
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
-instructions: instructions.o registers.o memory.o
+instructions: instructions.o registers.o memory.o test_instructions.o
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
 unpack: unpack.o bitpack.o 

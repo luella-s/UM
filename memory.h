@@ -7,7 +7,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
-typedef struct Memory *Memory;
+typedef struct Memory {
+   Seq_T seq;
+   Seq_T freeIDs;
+}*Memory;
 
 Memory memory_new();
 uint32_t map_segment_memory(Memory mem, uint32_t length);

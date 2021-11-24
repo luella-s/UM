@@ -25,10 +25,6 @@ Registers registers_new()
    res->arr = UArray_new(8, sizeof(uint32_t));
    assert(res->arr != NULL);
 
-   for (uint32_t i = 0; i < 8; i++) {
-      *((uint32_t *)UArray_at(res->arr, i)) = 0x0;
-   }
-
    return res;
 }
 

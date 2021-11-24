@@ -266,16 +266,27 @@ void build_input_test(Seq_T stream)
 
 void build_load_program_test(Seq_T stream)
 {
-        append(stream, loadval(r5, 4));
-        append(stream, map_segment(r4, r5));
-
-        append(stream, loadval(r3, '1'));
-        append(stream, loadval(r2, 'd'));
-        append(stream, conditional_move(r1, r2, r3));
-        append(stream, output(r1));
-
-        append(stream, loadval(r6, 0));
-        append(stream, load_program(r4, r6));
+        append(stream, loadval(r5, 72));
+        append(stream, loadval(r6, 75));
+        //mapping 2 segments 1, and 2
+        append(stream, map_segment(r1, r5));
+        append(stream, unmap_segment(r1));
+        append(stream, map_segment(r2, r6));
+        append(stream, output(r2));
+        
+        //storing a value in segment 2 pos 150
+        append(stream, loadval(r3, 0xa00fff));
+        append(stream, loadval(r7, 65));
+        append(stream, segmented_store(r2, r7, r3));
+        
+        //load segment 2 to segment 0
+        // with pc to point to 65
+        append(stream, load_program(r2, r7));
+        // get value at 0, 65 and output 
+        append(stream, loadval(r5, 0));
+        append(stream, segmented_load(r0, r5, r7));
+        append(stream, output(r0));
+        append(stream, halt());
 }
 
 void build_load_program_jump_test(Seq_T stream)
