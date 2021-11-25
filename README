@@ -3,7 +3,7 @@
  *                     README
  *
  *     Assignment: COMP40 Homework 6 - UM
- *     Authors:  Luella Sugiman (lsugim01), Unna
+ *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
  *     Date:     11/24/21
  *
  **************************************************************/
@@ -14,22 +14,58 @@
 - Lecture slides
 
 /* * * * * * * * * * Correctly Implemented * * * * * * * * * */
-
+Our code passes our unit tests so it is correct to our knowledge,
+but there is a bug which causes it to not pass larger tests 
+that we haven't been able to figure out.
 
 /* * * * * * * * * Departures from Design * * * * * * * * */
 
 1. Structure to represent Segments 
 2. Structure to hold available segment IDs
-2. Additional Program_Counter module
-3. 
+3. Interaction between modules was more than we 
+    planned for. 
+    Ex: Um module interacts with execute instructions.
 
 /* * * * * * * * * * Architecture * * * * * * * * * */
+Module 1: memory
+Sequence of UArrays address table to hold segments
+Outer Sequence “Memory”: represents segment (void * points to Sequence)
+Inner UAray “Segment”: Contains 32-bit words of size specified by program
+Separate Sequence: represents unmapped segment IDs
+Contains segment IDs available to reuse & overwrite 
+within memory stored as pointers. Next available segment is gotten
+from the sequence, or if there are none it is added at the end of memory.
+
+Module 2: registers 
+UArray of size 8 containing 8 32-bit registers
+Used by execute instructions (module 3)
+
+Module 3: execute instructions
+14 functions to call represented by enumerated types
+Helper functions for overlapping functionalities
+Manipulates & accesses memory (module 1) & registers (module 2)
+
+Module 4: unpack words
+Unpack next 32-bit word using Bitpack
+Calls respective function in execute instructions (module 3)
+
+Module 5: file reading
+Reads UM binary file
+Stores words in 0 segment in memory (module 1)
+
+Driver: UM program
+Reads input file by calling file reading function (module 5)
+Gets next word as indicated by program counter (offset value within 0 segment)
+Decodes word & executes instruction by calling unpack words function (module 4)
+And execute instructions function (module 3)
 
 
     
 /* * * * * * * * * * 50 million instructions * * * * * * * * * */
 
-It takes our UM 
+It took our um 12.58 seconds to execute midmark, which was around 
+30,000 instructions. So for 50,000,000 instructions, we expect it to 
+take about 350 minutes, so about 6 hours. 
 
 /* * * * * * * * * * Hours spent * * * * * * * * * */
 
@@ -40,4 +76,4 @@ Hours spent preparing design:
 4h
 
 Hours spent solving problems:
-22h
+30h

@@ -28,6 +28,7 @@ void read_file(Memory mem, char *filename)
         }
         set_word(mem, segmentID, i, word);
     }
+    fclose(input);
 }
 
 /*

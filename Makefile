@@ -37,7 +37,7 @@ LDFLAGS = -g -L/comp/40/build/lib -L/usr/sup/cii40/lib64
 # All programs cii40 (Hanson binaries) and *may* need -lm (math)
 # 40locality is a catch-all for this assignment, netpbm is needed for pnm
 # rt is for the "real time" timing library, which contains the clock support
-LDLIBS = -lbitpack -lcii40 -lm -lrt 
+LDLIBS = -lbitpack -lcii40 -lm -lrt -lum-dis -lcii
 # -l40locality -lnetpbm
 
 # Collect all .h files in your directory.
@@ -67,19 +67,16 @@ all: registers memory instructions unpack read_file um
 registers: registers.o test_registers.o
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
-memory: memory.o test_memory.o
+memory: memory.o test_memory.o 
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
 instructions: instructions.o registers.o memory.o test_instructions.o
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
-unpack: unpack.o bitpack.o 
+unpack: unpack.o test_unpack.o 
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
-read_file: read_file.o memory.o
-	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
-
-um: registers.o memory.o instructions.o unpack.o read_file.o um.o program_counter.o
+um: registers.o memory.o instructions.o unpack.o read_file.o um.o 
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
 

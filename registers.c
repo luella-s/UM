@@ -57,12 +57,10 @@ void set_register(Registers res, Um_register rg, uint32_t word)
     when register ID is out of bounds.
  * Returns: 32-bit word in the register.
  */
-uint32_t get_register(Registers res, Um_register rg)
-{
-    assert(res != NULL);
-    validate_reg(rg);
-    return *((uint32_t *)UArray_at(res->arr, rg));
-}
+ uint32_t get_register(Registers res, Um_register rg)
+ {
+     return *((uint32_t *)UArray_at(res->arr, rg));
+ }
 
 /*
  * Arguments: 
@@ -92,3 +90,6 @@ void validate_reg(Um_register reg)
 {
     assert(reg >= 0 && reg <= 7);
 }
+
+
+

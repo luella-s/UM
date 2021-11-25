@@ -5,7 +5,6 @@ int main()
 {
    Memory new_mem = memory_new();
    int segmentID = map_segment_memory(new_mem, 8);
-// printf("segment ID: %d is mapped? %d\n", segmentID, segment_mapped(new_mem, segmentID));
 
    for (int i = 0; i < 8; i++) {
       set_word(new_mem, segmentID, i, (uint32_t)(i*34));
@@ -25,15 +24,13 @@ int main()
    }
    
    unmap_segment_memory(new_mem, segmentID);
-   // printf("segment ID: %d is mapped? %d\n", segmentID, segment_mapped(new_mem, segmentID));
 
-  // printf("after\n\n");
    
-   int val = get_word(new_mem, segmentID2, 1); //should be 34                  //aborted
+   int val = get_word(new_mem, segmentID2, 1);     
    printf("word at segment %d and offset %d is %d\n", segmentID2, 1, val);
 
    set_word(new_mem, segmentID2, 1, (uint32_t)2484);
-   val = get_word(new_mem, segmentID2, 1); //should be 2484
+   val = get_word(new_mem, segmentID2, 1); 
    printf("word at segment %d and offset %d is %d\n", segmentID2, 1, val);
 
    memory_free(new_mem);

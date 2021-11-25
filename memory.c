@@ -67,9 +67,7 @@ uint32_t map_segment_memory(Memory mem, uint32_t length)
       for (int i = 0; i < (int)length; i++) {
          *((uint32_t *)UArray_at(arr, i)) = (uint32_t)0x0;
       }
-      // fprintf(stderr, "NEW segment length: %d\n", UArray_length(arr));
    }
-  //fprintf(stderr, "RETURNED segment id: %d, size %d \n", segmentID, Seq_length(mem->seq));
    return segmentID;
 }
 
@@ -89,8 +87,6 @@ void unmap_segment_memory(Memory mem, uint32_t segmentID)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   uint32_t mapped = segment_mapped(mem, segmentID);
-   assert(mapped == 1);
 
    /* Insert unmapped ID into Sequence of available IDs */
    uint32_t *ID = malloc(sizeof(*ID));
@@ -114,11 +110,7 @@ void copy_segment(Memory mem, uint32_t fromID, uint32_t toID)
 {
    assert(mem != NULL);
    validate_seg(mem, fromID);
-   //uint32_t mapped = segment_mapped(mem, fromID);
-   //assert(mapped == 1);
    validate_seg(mem, toID);
-   //mapped = segment_mapped(mem, toID);
-   //assert(mapped == 1);
 
    /* Copy elements of segment fromID to segment toID */
    UArray_T from_arr = (UArray_T)Seq_get(mem->seq, fromID);
@@ -127,7 +119,8 @@ void copy_segment(Memory mem, uint32_t fromID, uint32_t toID)
    uint32_t length = UArray_length(from_arr);
    UArray_resize(to_arr, length);
    for (uint32_t i = 0; i < length; i++) {
-      *((uint32_t *)UArray_at(to_arr, i)) = *((uint32_t *)UArray_at(from_arr, i));
+      *((uint32_t *)UArray_at(to_arr, i)) = \
+      *((uint32_t *)UArray_at(from_arr, i));
    }
 }
 
@@ -149,9 +142,7 @@ uint32_t get_word(Memory mem, uint32_t segmentID, uint32_t offset)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   uint32_t mapped = segment_mapped(mem, segmentID);
-   assert(mapped == 1);
-   validate_offset(mem, segmentID, offset);
+  // validate_offset(mem, segmentID, offset);
    
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    return *((uint32_t *)UArray_at(tmp_arr, offset));
@@ -176,9 +167,7 @@ void set_word(Memory mem, uint32_t segmentID, uint32_t offset, uint32_t word)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   uint32_t mapped = segment_mapped(mem, segmentID);
-   assert(mapped == 1);
-   validate_offset(mem, segmentID, offset);
+   //validate_offset(mem, segmentID, offset);
 
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    assert(tmp_arr != NULL);
@@ -266,5 +255,6 @@ uint32_t segment_mapped(Memory mem, uint32_t segmentID)
 */
 void validate_offset(Memory mem, uint32_t segmentID, uint32_t offset)
 {
-   assert(offset < (uint32_t)UArray_length((UArray_T)Seq_get(mem->seq, segmentID)));
+   assert(offset < (uint32_t)UArray_length((UArray_T) \
+   Seq_get(mem->seq, segmentID)));
 }
