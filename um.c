@@ -1,3 +1,15 @@
+/**************************************************************
+ *
+ *                     um.c
+ *
+ *     Assignment: COMP40 Homework 6 - UM
+ *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
+ *     Date:     11/24/21
+ *
+ *     Driver class of UM program - runs the UM program.
+ *
+ **************************************************************/
+
 #ifndef UM_H_
 #define UM_H_
 
@@ -6,10 +18,6 @@
 #include "unpack.h"
 #include "read_file.h"
 #include "instructions.h"
-<<<<<<< HEAD
-=======
-#include "program_counter.h"
->>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 #include "um-dis.h"
 #include <stdio.h>
 
@@ -22,21 +30,13 @@ int main(int argc, char *argv[])
 
     Memory mem = memory_new();
     Registers reg = registers_new();
-<<<<<<< HEAD
-=======
-    uint32_t *pc = malloc(sizeof(*pc));
-    *pc = 0;
->>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 
     /* Read file into 0 segment */
     read_file(mem, argv[1]);
 
     /* Initialize program counter */
-<<<<<<< HEAD
     uint32_t *pc = malloc(sizeof(*pc));
     *pc = 0;
-=======
->>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 
     /* Run program */
     run_program(mem, reg, pc);
@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
+
 
 void run_program(Memory mem, Registers reg, uint32_t *pc)
 {

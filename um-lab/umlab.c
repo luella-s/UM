@@ -311,7 +311,3 @@ void build_load_program_jump_test(Seq_T stream)
 
         append(stream, halt());
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077

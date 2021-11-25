@@ -19,10 +19,6 @@
 #include "stdint.h"
 #include "registers.h"
 #include "memory.h"
-<<<<<<< HEAD
-=======
-#include "program_counter.h"
->>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 #include "unpack.h"
 #include <assert.h>
 #include <stdlib.h>
@@ -119,7 +115,6 @@ void division(Registers reg, Um_register ra, Um_register rb, Um_register rc);
 void bitwise_nand(Registers reg, Um_register ra, Um_register rb,\
      Um_register rc);
 /*
-<<<<<<< HEAD
  * Arguments: 
     Memory object,
     Registers object,
@@ -134,19 +129,6 @@ void bitwise_nand(Registers reg, Um_register ra, Um_register rb,\
  */
 void halt(Memory mem, Registers reg, uint32_t *pc, Unpacked *u);
 
-=======
-  * Arguments: 
-     Memory object,
-     Registers object.
-  * Purpose: executes the halt instruction - stops computation, frees memory
-     and exits the program.
-  * Fails:
-     when mrm is NULL,
-     when reg is NULL.
-  * Returns: void.
-  */
-void halt(Memory mem, Registers reg, uint32_t *pc, Unpacked *u);
->>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 /*
   * Arguments: 
      Memory object,

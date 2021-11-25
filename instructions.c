@@ -191,7 +191,6 @@ void bitwise_nand(Registers reg, Um_register ra, \
     set_register(reg, ra, val);
 }
 /*
-<<<<<<< HEAD
  * Arguments: 
     Memory object,
     Registers object,
@@ -204,21 +203,6 @@ void bitwise_nand(Registers reg, Um_register ra, \
     when reg is NULL.
  * Returns: void.
  */
-=======
-  * Arguments: 
-     Memory object,
-     Registers object,
-     Program program_counter
-     Current word
-  * Purpose: executes the halt instruction - stops computation, frees memory
-     and exits the program.
-  * Fails:
-     when mem is NULL,
-     when reg is NULL.
-  * Returns: void.
-  */
-
->>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 void halt(Memory mem, Registers reg, uint32_t *pc, Unpacked *u)
 {
     assert(mem != NULL);
