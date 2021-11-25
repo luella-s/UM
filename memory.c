@@ -1,16 +1,3 @@
-/**************************************************************
- *
- *                     memory.c
- *
- *     Assignment: COMP40 Homework 6 - UM
- *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
- *     Date:     11/24/21
- *
- *     Implementation of Memory module - implements segmented memory
- *     data structure.
- *
- **************************************************************/
-
 #include "memory.h"
 #include <stdio.h>
 
@@ -19,10 +6,7 @@
    Sequence holding segments, each element represents one segment ID
    Sequence holding available segment IDs
  */
-struct Memory {
-   Seq_T seq;
-   Seq_T freeIDs;
-};
+
 
 /* Helper functions */
 void validate_seg(Memory mem, uint32_t segmentID);
@@ -83,6 +67,7 @@ uint32_t map_segment_memory(Memory mem, uint32_t length)
       for (int i = 0; i < (int)length; i++) {
          *((uint32_t *)UArray_at(arr, i)) = (uint32_t)0x0;
       }
+      // fprintf(stderr, "NEW segment length: %d\n", UArray_length(arr));
    }
    return segmentID;
 }
@@ -103,8 +88,6 @@ void unmap_segment_memory(Memory mem, uint32_t segmentID)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   uint32_t mapped = segment_mapped(mem, segmentID);
-   assert(mapped == 1);
 
    /* Insert unmapped ID into Sequence of available IDs */
    uint32_t *ID = malloc(sizeof(*ID));
@@ -128,11 +111,7 @@ void copy_segment(Memory mem, uint32_t fromID, uint32_t toID)
 {
    assert(mem != NULL);
    validate_seg(mem, fromID);
-   uint32_t mapped = segment_mapped(mem, fromID);
-   assert(mapped == 1); //commented
    validate_seg(mem, toID);
-   mapped = segment_mapped(mem, toID);
-   assert(mapped == 1); //commenteds
 
    /* Copy elements of segment fromID to segment toID */
    UArray_T from_arr = (UArray_T)Seq_get(mem->seq, fromID);
@@ -146,26 +125,24 @@ void copy_segment(Memory mem, uint32_t fromID, uint32_t toID)
 }
 
 /*
- * Arguments: 
+* Arguments: 
    Memory object,
    segment ID to get a word from,
-   Offset - position of word within segment.
- * Purpose: Finds a word in memory and returns the value stored
-   at that position. 
- * Fails:
+   Offset- position of word within segment.
+* Purpose: Finds a word in memory and returns the value stored
+* at that position. 
+* Fails:
    when mem is NULL,
    when segmentID is out of bounds.
    when segmentID isn't mapped,
    when offset is out of the bounds of the segment.
- * Returns: The value stored at the specified position.
- */
+* Returns: The value stored at the specified position.
+*/
 uint32_t get_word(Memory mem, uint32_t segmentID, uint32_t offset)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   uint32_t mapped = segment_mapped(mem, segmentID);
-   assert(mapped == 1);
-   validate_offset(mem, segmentID, offset);
+  // validate_offset(mem, segmentID, offset);
    
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    return *((uint32_t *)UArray_at(tmp_arr, offset));
@@ -175,9 +152,10 @@ uint32_t get_word(Memory mem, uint32_t segmentID, uint32_t offset)
 * Arguments: 
    Memory object,
    segment ID to get a word from,
-   offset of word within segment,
-   a word to be loaded in that address in memory.
-* Purpose: Finds an address in memory and sets a given value there.
+   Position of word within segment.
+   a word to be loaded in that address in memory;
+* Purpose: Finds an address in memory and sets a 
+* given value there;
 * Fails:
    when mem is NULL,
    when segmentID is out of bounds,
@@ -189,32 +167,15 @@ void set_word(Memory mem, uint32_t segmentID, uint32_t offset, uint32_t word)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   uint32_t mapped = segment_mapped(mem, segmentID);
-   assert(mapped == 1);
-   validate_offset(mem, segmentID, offset);
+   //validate_offset(mem, segmentID, offset);
 
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    assert(tmp_arr != NULL);
    *((uint32_t *)UArray_at(tmp_arr, offset)) = word;
 }
 
-/*
-* Arguments: 
-   Memory object,
-   segment ID to get a length of.
-* Purpose: Finds the length of a specified segment.
-* Fails:
-   when mem is NULL,
-   when segmentID is out of bounds,
-   when segmentID isn't mapped.
-* Returns: void.
-*/
 uint32_t get_length_segment(Memory mem, uint32_t segmentID)
 {
-   assert(mem != NULL);
-   uint32_t mapped = segment_mapped(mem, segmentID);
-   assert(mapped == 1);
-
    return UArray_length((UArray_T)Seq_get(mem->seq, segmentID));
 }
 
@@ -223,8 +184,7 @@ uint32_t get_length_segment(Memory mem, uint32_t segmentID)
    Memory object,
 * Purpose: destructor for memory object.
 * Fails:
-   mem is NULL,
-   mem's contents are NULL.
+   memory is not freed by the end.
 * Returns: void
 */
 void memory_free(Memory mem)
@@ -233,7 +193,6 @@ void memory_free(Memory mem)
    assert(mem->seq != NULL);
    assert (mem->freeIDs != NULL);
    
-   /* Free mem->seq values */
    uint32_t l = Seq_length(mem->seq);
    for(uint32_t i = 0; i < l; i++){
       UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, i);
@@ -241,14 +200,12 @@ void memory_free(Memory mem)
       UArray_free(&(tmp_arr));
    }
 
-   /* Free mem->freeIDs values */
    l = Seq_length(mem->freeIDs);
    for(uint32_t i = 0; i < l; i++){
       uint32_t *tmp = (uint32_t *)Seq_get(mem->freeIDs, i);
       free((void *)tmp);
    }
 
-   /* Free data structures */
    Seq_free(&(mem->seq));
    Seq_free(&(mem->freeIDs));
    free(mem);

@@ -1,18 +1,3 @@
-/**************************************************************
- *
- *                     read_file.c
- *
- *     Assignment: COMP40 Homework 6 - UM
- *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
- *     Date:     11/24/21
- *
- *     Implementation of Read_file module - implements functions
- *     that reads an input file and stores its UM instructions in the
- *     0 segment.
- *
- **************************************************************/
-
-
 #include "read_file.h"
 
 /* Helper functions */
@@ -21,7 +6,7 @@ static FILE *open_or_abort(char *filename, char *mode);
 
 /*
  * Arguments:
-Memory object,
+    Memory 
    file name obtained throught the command line,
    mode to use for fopen.
  * Purpose: Read information from input file and store it 
@@ -43,6 +28,7 @@ void read_file(Memory mem, char *filename)
         }
         set_word(mem, segmentID, i, word);
     }
+    fclose(input);
 }
 
 /*
