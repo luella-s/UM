@@ -1,3 +1,15 @@
+/**************************************************************
+ *
+ *                     um.c
+ *
+ *     Assignment: COMP40 Homework 6 - UM
+ *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
+ *     Date:     11/24/21
+ *
+ *     Driver class of UM program - runs the UM program.
+ *
+ **************************************************************/
+
 #ifndef UM_H_
 #define UM_H_
 
