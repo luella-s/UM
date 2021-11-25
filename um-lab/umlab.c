@@ -173,7 +173,10 @@ void build_add_test(Seq_T stream)
         append(stream, loadval(r3, 46));
         append(stream, add(r1, r2, r3));
         append(stream, output(r1));
-        // append(stream, halt());
+        append(stream, output(r1));
+        append(stream, output(r2));
+        append(stream, output(r3));
+         append(stream, halt());
 }
 
 void build_multiply_test(Seq_T stream)
@@ -182,7 +185,7 @@ void build_multiply_test(Seq_T stream)
         append(stream, loadval(r3, 10));
         append(stream, multiply(r1, r2, r3));
         append(stream, output(r1));
-        // append(stream, halt());
+        append(stream, halt());
 }
 
 void build_divide_test(Seq_T stream)
@@ -216,10 +219,12 @@ void build_seg_load_test(Seq_T stream)
         append(stream, loadval(r1, 0));
         append(stream, loadval(r4, 8));
         append(stream, map_segment(r2, r4));
-        append(stream, loadval(r3, 105));
+        append(stream, loadval(r3, 'c'));
         append(stream, segmented_store(r2, r1, r3));
         append(stream, segmented_load(r6, r2, r1));
-        append(stream, output(r6)); //should be 105
+        append(stream, segmented_load(r5, r2, r1));
+        append(stream, output(r6)); //should be 'c'
+        append(stream, output(r5));
         append(stream, halt());
 }
 
@@ -266,6 +271,7 @@ void build_input_test(Seq_T stream)
 
 void build_load_program_test(Seq_T stream)
 {
+        append(stream, output(r2));
         append(stream, loadval(r5, 72));
         append(stream, loadval(r6, 75));
         //mapping 2 segments 1, and 2
@@ -273,8 +279,11 @@ void build_load_program_test(Seq_T stream)
         append(stream, unmap_segment(r1));
         append(stream, map_segment(r2, r6));
         append(stream, output(r2));
+        append(stream, loadval(r3, 9));
+        append(stream, conditional_move(r1, r2, r3));
+        append(stream, output(r1));
         
-        //storing a value in segment 2 pos 150
+        //storing a value in segment 1 pos 65
         append(stream, loadval(r3, 0xa00fff));
         append(stream, loadval(r7, 65));
         append(stream, segmented_store(r2, r7, r3));

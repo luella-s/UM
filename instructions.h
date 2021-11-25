@@ -19,7 +19,7 @@
 #include "stdint.h"
 #include "registers.h"
 #include "memory.h"
-#include "program_counter.h"
+#include "unpack.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -119,7 +119,9 @@ void bitwise_nand(Registers reg, Um_register ra, Um_register rb, Um_register rc)
 /*
  * Arguments: 
     Memory object,
-    Registers object.
+    Registers object,
+    program counterm
+    Unpacked struct.
  * Purpose: executes the halt instruction - stops computation, frees memory
     and exits the program.
  * Fails:
@@ -127,7 +129,7 @@ void bitwise_nand(Registers reg, Um_register ra, Um_register rb, Um_register rc)
     when reg is NULL.
  * Returns: void.
  */
-void halt(Memory mem, Registers reg);
+void halt(Memory mem, Registers reg, uint32_t *pc, Unpacked *u);
 
 /*
  * Arguments: 

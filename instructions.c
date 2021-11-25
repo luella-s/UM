@@ -188,6 +188,8 @@ void bitwise_nand(Registers reg, Um_register ra, Um_register rb, Um_register rc)
  * Arguments: 
     Memory object,
     Registers object,
+    program counter,
+    Unpacked struct
  * Purpose: executes the halt instruction - stops computation, frees memory
     and exits the program.
  * Fails:
@@ -195,13 +197,15 @@ void bitwise_nand(Registers reg, Um_register ra, Um_register rb, Um_register rc)
     when reg is NULL.
  * Returns: void.
  */
-void halt(Memory mem, Registers reg)
+void halt(Memory mem, Registers reg, uint32_t *pc, Unpacked *u)
 {
     assert(mem != NULL);
     assert(reg != NULL);
 
     memory_free(mem);
     registers_free(reg);
+    free(pc);
+    free(u);
     exit(EXIT_SUCCESS);
 }
 
