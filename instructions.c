@@ -300,6 +300,9 @@ void output(Registers res, Um_register rc)
   
 void input(Registers res, Um_register rc)
 {
+    assert(res != NULL);
+    validate_reg(rc);
+
     uint32_t i = getc(stdin);
     uint32_t c = validate_char(i);
     set_register(res, rc, c);

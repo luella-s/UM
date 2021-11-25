@@ -49,18 +49,38 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
+/*
+ * Arguments: 
+    Memory object,
+    Registers object,
+    program counter.
+ * Purpose: runs program until the end of the 0 segment is reached.
+ * Returns: void.
+ */
 void run_program(Memory mem, Registers reg, uint32_t *pc)
 {
-    while (*pc < get_length_segment(mem, 0)) {
+    uint32_t length = get_length_segment(mem, 0);
+    while (*pc < length) {
         uint32_t word = get_word(mem, 0, *pc);
         Unpacked *u = unpack(word);
         *pc += 1;
         execute(mem, reg, u, pc);
+        if (u->op == LOADP) {
+            length = get_length_segment(mem, 0);
+        }
         free(u);
     }
 }
 
+/*
+ * Arguments: 
+    Memory object,
+    Registers object,
+    Unpacked struct,
+    program counter.
+ * Purpose: executes instructions based on OP code.
+ * Returns: void.
+ */
 void execute(Memory mem, Registers reg, Unpacked *u, uint32_t *pc)
 {
     if (u->op == CMOV) {

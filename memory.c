@@ -1,13 +1,6 @@
 #include "memory.h"
 #include <stdio.h>
 
-/*
- * Memory struct:
-   Sequence holding segments, each element represents one segment ID
-   Sequence holding available segment IDs
- */
-
-
 /* Helper functions */
 void validate_seg(Memory mem, uint32_t segmentID);
 uint32_t segment_mapped(Memory mem, uint32_t segmentID);
@@ -142,7 +135,7 @@ uint32_t get_word(Memory mem, uint32_t segmentID, uint32_t offset)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-  // validate_offset(mem, segmentID, offset);
+   validate_offset(mem, segmentID, offset);
    
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    return *((uint32_t *)UArray_at(tmp_arr, offset));
@@ -167,15 +160,30 @@ void set_word(Memory mem, uint32_t segmentID, uint32_t offset, uint32_t word)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   //validate_offset(mem, segmentID, offset);
+   validate_offset(mem, segmentID, offset);
 
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    assert(tmp_arr != NULL);
    *((uint32_t *)UArray_at(tmp_arr, offset)) = word;
 }
 
+/*
+* Arguments: 
+   Memory object,
+   segment ID to get a length of.
+* Purpose: Finds the length of a specified segment.
+* Fails:
+   when mem is NULL,
+   when segmentID is out of bounds,
+   when segmentID isn't mapped.
+* Returns: void.
+*/
 uint32_t get_length_segment(Memory mem, uint32_t segmentID)
 {
+   assert(mem != NULL);
+   uint32_t mapped = segment_mapped(mem, segmentID);
+   assert(mapped == 1);
+
    return UArray_length((UArray_T)Seq_get(mem->seq, segmentID));
 }
 
@@ -193,6 +201,7 @@ void memory_free(Memory mem)
    assert(mem->seq != NULL);
    assert (mem->freeIDs != NULL);
    
+   /* Free mem->seq values */
    uint32_t l = Seq_length(mem->seq);
    for(uint32_t i = 0; i < l; i++){
       UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, i);
@@ -200,12 +209,14 @@ void memory_free(Memory mem)
       UArray_free(&(tmp_arr));
    }
 
+   /* Free mem->freeIDs values */
    l = Seq_length(mem->freeIDs);
    for(uint32_t i = 0; i < l; i++){
       uint32_t *tmp = (uint32_t *)Seq_get(mem->freeIDs, i);
       free((void *)tmp);
    }
 
+   /* Free data structures */
    Seq_free(&(mem->seq));
    Seq_free(&(mem->freeIDs));
    free(mem);
