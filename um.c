@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     /* Deallocate memory */
     memory_free(mem);
     registers_free(reg);
+    free(pc);
     // counter_free(pc);
 
     return EXIT_SUCCESS;
@@ -41,13 +42,19 @@ int main(int argc, char *argv[])
 
 void run_program(Memory mem, Registers reg, uint32_t *pc)
 {
-    while (*pc < get_length_segment(mem, 0)) {
+    uint32_t length = get_length_segment(mem, 0);
+    while (*pc < length) {
         uint32_t word = get_word(mem, 0, *pc);
         Unpacked *u = unpack(word);
         //fprintf(stderr, "%d, Word: %x\n", *pc, word);
         //fprintf(stderr, "Counter: %u, Length: %u\n", *pc, get_length_segment(mem, 0));
         *pc += 1;
+        
         execute(mem, reg, u, pc);
+        if (u->op == LOADP) {
+            length = get_length_segment(mem, 0);
+        }
+
         free(u);
     }
 }

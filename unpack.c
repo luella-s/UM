@@ -10,6 +10,7 @@ Unpacked *unpack_loadval(uint32_t word);
 void validate_op(Um_opcode op);
 static inline void validate_reg(Um_register reg);
 
+
 Unpacked *unpack(uint32_t word)
 {
     if (Bitpack_getu(word, OP_BITS, 32 - OP_BITS) == LV) {
