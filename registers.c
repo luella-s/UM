@@ -1,3 +1,16 @@
+/**************************************************************
+ *
+ *                     registers.c
+ *
+ *     Assignment: COMP40 Homework 6 - UM
+ *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
+ *     Date:     11/24/21
+ *
+ *     Implementation of Memory module - implements the 8 32-bit registers
+ *     data structure.
+ *
+ **************************************************************/
+
 #include "registers.h"
 
 /* Helper functions */

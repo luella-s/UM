@@ -266,7 +266,7 @@ void unmap_segment(Memory mem, Registers reg, Um_register rc)
  */
 void output(Registers reg, Um_register rc)
 {
-    assert(res != NULL);
+    assert(reg != NULL);
     validate_registers(rc);
     
     assert(get_register(reg, rc) <= 255);
@@ -288,7 +288,7 @@ void output(Registers reg, Um_register rc)
 void input(Registers reg, Um_register rc)
 {
     assert(reg != NULL);
-    validate_register(rc);
+    validate_registers(rc);
 
     uint32_t i = getc(stdin);
     uint32_t c = validate_char(i);

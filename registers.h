@@ -1,3 +1,16 @@
+/**************************************************************
+ *
+ *                     registers.h
+ *
+ *     Assignment: COMP40 Homework 6 - UM
+ *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
+ *     Date:     11/24/21
+ *
+ *     Interface of Registers module - defines public functions of the
+ *     8 32-bit registers data structure.
+ *
+ **************************************************************/
+
 #ifndef REGISTERS_H_
 #define REGISTERS_H_
 

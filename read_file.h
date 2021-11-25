@@ -1,3 +1,16 @@
+/**************************************************************
+ *
+ *                     read_file.h
+ *
+ *     Assignment: COMP40 Homework 6 - UM
+ *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
+ *     Date:     11/24/21
+ *
+ *     Interface of Read_file module - defines public functions that
+ *     reads an input file and stores its UM instructions in the 0 segment.
+ *
+ **************************************************************/
+
 #ifndef READ_FILE_H_
 #define READ_FILE_H_
 
@@ -13,7 +26,7 @@
 
 /*
  * Arguments:
-    Memory 
+   Memory object,
    file name obtained throught the command line,
    mode to use for fopen.
  * Purpose: Read information from input file and store it 
