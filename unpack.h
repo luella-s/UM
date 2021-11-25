@@ -1,16 +1,16 @@
 /**************************************************************
- *
- *                     unpack.h
- *
- *     Assignment: COMP40 Homework 6 - UM
- *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
- *     Date:     11/24/21
- *
- *     Interface of Unpack module - defines public functions that
- *     unpacks a 32-bit UM instruction into its constituent components.
- *
- **************************************************************/
-
+  *
+  *                     unpack.h
+  *
+  *     Assignment: COMP40 Homework 6 - UM
+  *     Authors:  Luella Sugiman (lsugim01), Unnathy Nellutla (unellu01)
+  *     Date:     11/24/21
+  *
+  *     Interface of Unpack module - defines public functions that
+  *     unpacks a 32-bit UM instruction into its constituent components.
+  *
+  **************************************************************/
+  
 #ifndef UNPACK_H_
 #define UNPACK_H_
 
@@ -26,13 +26,13 @@ typedef enum Um_opcode {
 } Um_opcode;
 
 /*
- * Unpacked struct:
-    Operation code,
-    UM register a,
-    UM register b,
-    UM register c,
-    word value.
- */
+  * Unpacked struct:
+     Operation code,
+     UM register a,
+     UM register b,
+     UM register c,
+     word value.
+  */
 typedef struct Unpacked {
     Um_opcode op;
     Um_register ra;
@@ -42,11 +42,12 @@ typedef struct Unpacked {
 } Unpacked;
 
 /*
- * Arguments: 
-    32-bit word to unpack.
- * Purpose: unpacks UM instruction into its op code, UM register IDs and value.
- * Returns: pointer to Unpacked struct containing unpacked components
- */
+  * Arguments: 
+     32-bit word to unpack.
+  * Purpose: unpacks UM instruction into its op code, UM register IDs and value.
+  * Returns: pointer to Unpacked struct containing unpacked components
+*/
+  
 Unpacked *unpack(uint32_t word);
 
 #endif

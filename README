@@ -14,9 +14,13 @@
 - Lecture slides
 
 /* * * * * * * * * * Correctly Implemented * * * * * * * * * */
+<<<<<<< HEAD
 Our code passes our unit tests so it is correct to our knowledge,
 but there is a bug which causes it to not pass larger tests 
 that we haven't been able to figure out.
+=======
+Our code passes our tests so it is correct to our knowledge.
+>>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 
 /* * * * * * * * * Departures from Design * * * * * * * * */
 
@@ -65,7 +69,12 @@ And execute instructions function (module 3)
 
 It took our um 12.58 seconds to execute midmark, which was around 
 30,000 instructions. So for 50,000,000 instructions, we expect it to 
+<<<<<<< HEAD
 take about 350 minutes, so about 6 hours. 
+=======
+take about 350 minutes, so about 6 hours. We know the time from the 
+profiling tool from the lab.
+>>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 
 /* * * * * * * * * * Hours spent * * * * * * * * * */
 
@@ -76,4 +85,8 @@ Hours spent preparing design:
 4h
 
 Hours spent solving problems:
+<<<<<<< HEAD
 30h
+=======
+30h
+>>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077

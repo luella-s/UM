@@ -67,18 +67,21 @@ all: registers memory instructions unpack read_file um
 registers: registers.o test_registers.o
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
-memory: memory.o test_memory.o
+memory: memory.o test_memory.o 
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
 instructions: instructions.o registers.o memory.o test_instructions.o
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
-unpack: unpack.o bitpack.o 
+unpack: unpack.o test_unpack.o 
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
+<<<<<<< HEAD
 read_file: read_file.o memory.o
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
+=======
+>>>>>>> 86e2dbe488427b3d44c65fedec351b350d99f077
 um: registers.o memory.o instructions.o unpack.o read_file.o um.o 
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 

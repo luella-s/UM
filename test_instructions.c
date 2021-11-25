@@ -1,4 +1,12 @@
 #include "instructions.h"
+#include "seq.h"
+#include "uarray.h"
+#include "stdint.h"
+#include "registers.h"
+#include "memory.h"
+#include "program_counter.h"
+#include <assert.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 void test_cond_move(Registers reg);
@@ -15,11 +23,12 @@ void test_input_output(Registers reg);
 void test_load_program(Memory mem, Registers reg);
 void test_load_val(Registers reg);
 void test_freeIDs(Memory mem, Registers reg);
+void test_mid_program(Memory mem, Registers reg);
 
 int main() 
 {
-    Registers reg = registers_new();
-    Memory mem = memory_new();
+    //Registers reg = registers_new();
+    //Memory mem = memory_new();
     // map_segment_memory(mem, 8);
     // set_word(mem, 0, 0, 589);
     
@@ -33,12 +42,10 @@ int main()
     test_map_segment(mem, reg);
     test_unmap_segment(mem, reg);
     test_input_output(reg); */
-    test_load_program(mem, reg);
-    /*test_load_val(reg);
-    test_halt(mem, reg); */
+    //test_load_program(mem, reg);
+    //test_halt(mem, reg); 
 
     //test_freeIDs(mem, reg);
-    halt(mem, reg);
 }
 
 void test_freeIDs(Memory mem, Registers reg)
@@ -118,10 +125,6 @@ void test_bitwise_nand(Registers reg)
     printf("Bitwise NAND:\nra: %u\n\n", get_register(reg, r0));
 }
 
-void test_halt(Memory mem, Registers reg)
-{
-    halt(mem, reg);
-}
 
 void test_map_segment(Memory mem, Registers reg){
     set_register(reg, r1, 3);
@@ -133,7 +136,6 @@ void test_unmap_segment(Memory mem, Registers reg)
 {
     // set_register(reg, r2, 1);
     unmap_segment(mem, reg, r2);
-    // printf("Unmap Segment:\nrc: %u\nsegment mapped? %d\n\n", get_register(reg, r2), segment_mapped(mem, 3));
 }
 
 void test_input_output(Registers reg){

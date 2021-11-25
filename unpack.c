@@ -10,8 +10,8 @@
  *     that unpacks a 32-bit UM instruction into its constituent components.
  *
  **************************************************************/
-
 #include "unpack.h"
+#include <stdio.h> //FOR TESTING
 
 #define OP_BITS 4
 #define REG_BITS 3
@@ -28,6 +28,7 @@ static inline void validate_reg(Um_register reg);
  * Purpose: unpacks UM instruction into its op code, UM register IDs and value.
  * Returns: pointer to Unpacked struct containing unpacked components
  */
+
 Unpacked *unpack(uint32_t word)
 {
     if (Bitpack_getu(word, OP_BITS, 32 - OP_BITS) == LV) {
@@ -45,6 +46,7 @@ Unpacked *unpack(uint32_t word)
     when UM instruction contract is violated (invalid op code or register ID).
  * Returns: pointer to Unpacked struct containing unpacked components
  */
+
 Unpacked *unpack_rest(uint32_t word)
 {
     Unpacked *u = malloc(sizeof(*u));
@@ -53,7 +55,7 @@ Unpacked *unpack_rest(uint32_t word)
     /* Unpack & validate op code */
     u->op = Bitpack_getu(word, OP_BITS, 32 - OP_BITS);
     validate_op(u->op);
-
+    
     /* Unpack & validate UM register IDs */
     u->ra = Bitpack_getu(word, REG_BITS, REG_BITS * 2);
     u->rb = Bitpack_getu(word, REG_BITS, REG_BITS);
@@ -75,11 +77,12 @@ Unpacked *unpack_rest(uint32_t word)
     when UM instruction contract is violated (invalid op code or register ID).
  * Returns: pointer to Unpacked struct containing unpacked components
  */
+ 
 Unpacked *unpack_loadval(uint32_t word)
 {
     Unpacked *u = malloc(sizeof(*u));
     assert(u != NULL);
-
+    
     /* Unpack & validate op code & register ID */
     u->op = LV;
     u->ra = Bitpack_getu(word, REG_BITS, 32 - OP_BITS - REG_BITS);
@@ -97,10 +100,12 @@ Unpacked *unpack_loadval(uint32_t word)
     when op code is not valid.
  * Returns: void.
  */
+ 
 void validate_op(Um_opcode op)
 {
     assert(op >= 0 && op <= 13);
 }
+
 
 /*
  * Arguments: 
@@ -110,6 +115,7 @@ void validate_op(Um_opcode op)
     when register ID is not valid.
  * Returns: void.
  */
+ 
 void validate_reg(Um_register reg)
 {
     assert(reg >= 0 && reg <= 7);
