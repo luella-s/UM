@@ -154,7 +154,8 @@ void multiplication(Registers reg, Um_register ra, \
  * Returns: void.
  */
  
-void division(Registers reg, Um_register ra, Um_register rb, Um_register rc){
+void division(Registers reg, Um_register ra, Um_register rb, \
+    Um_register rc){
     assert(reg != NULL);
     validate_registers(ra);
     validate_registers(rb);
@@ -220,7 +221,8 @@ void halt(Memory mem, Registers reg, uint32_t *pc, Unpacked *u)
      Memory object,
      Registers object,
      2 UM register IDs.
-  * Purpose: executes the map segment instruction - maps a new segment of 'rc'
+  * Purpose: executes the map segment instruction - 
+   maps a new segment of 'rc'
      length and sets rb = the recently mapped segment ID.
   * Fails:
      when mem is NULL,
@@ -300,9 +302,6 @@ void output(Registers res, Um_register rc)
   
 void input(Registers res, Um_register rc)
 {
-    assert(res != NULL);
-    validate_reg(rc);
-
     uint32_t i = getc(stdin);
     uint32_t c = validate_char(i);
     set_register(res, rc, c);

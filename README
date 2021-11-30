@@ -76,3 +76,51 @@ Hours spent preparing design:
 
 Hours spent solving problems:
 30h
+
+/* * * * * * * * * * Tests * * * * * * * * * */
+add.um
+adds together values stored in registers 2 and 3
+and puts it into register 1. Then it prints 
+Register 1 twice and registers 2 and 3 to make
+sure the values are still in the registers. 
+Expected sum is 78, which is N in ascii.
+cond-move.um
+Loads nonzero values to r3 and r2.
+Tests conditional move by checking if 
+the value in r2 is moved to r1.
+divide.um
+Loads values in registers r2 and r3 and outputs
+them divided by each other to test division.
+halt-verbose.um
+Checks if the program reads instructions after halt.
+No expected output.
+halt.um
+Calls halt to test it. No expected output.
+input.um
+Takes a character input and outputs it. Should be the same character. 
+Tests input and output. 
+load_program.um
+Tests load program by mapping two segments and 
+then setting the program counter in the segment to be loaded,
+so that it starts there when load program is called.
+load-program-jump.um
+Tests load program jumping in segment 0.
+map-seg.um
+Map a segment and output the segment id to check
+if it was mapped.
+map-segment.um
+map and unmap a segment, output the segment id that was 
+unmapped.
+multiply.um
+Multiplies two values stored in registers and outputs it. 
+nand.um
+Nands 0 and 0 together to test nand. 
+output-load-val.um
+Tests load value by outputting values stored in registers.
+output.um
+Outputs values loaded into r1.
+seg-load.um
+seg-store.um
+Both of these use segment load and segment store to get values
+in and out of memory and output them.
+unmap-seg.um

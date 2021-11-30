@@ -52,7 +52,7 @@ INCLUDES = $(shell echo *.h)
 
 ############### Rules ###############
 
-all: registers memory instructions unpack read_file um
+all: um
 
 
 ## Compile step (.c files -> .o files)
@@ -63,18 +63,6 @@ all: registers memory instructions unpack read_file um
 
 
 ## Linking step (.o -> executable program)
-
-registers: registers.o test_registers.o
-	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
-
-memory: memory.o test_memory.o 
-	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
-
-instructions: instructions.o registers.o memory.o test_instructions.o
-	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
-
-unpack: unpack.o test_unpack.o 
-	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
 
 um: registers.o memory.o instructions.o unpack.o read_file.o um.o 
 	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)

@@ -159,97 +159,97 @@ void Bitpack_run_tests(bool print, Bitpack_testfun test, void *cl)
 /****************************************************************************/
 
 #define NELEMS(A) (sizeof(A) / sizeof((A)[0])) /* standard macro */
-        /* test all combination of word, w, lsb, both signed and unsigned */
-        for (volatile unsigned i = 0; i < NELEMS(words); i++) {
-                uint64_t old = words[i];
-                for (volatile unsigned windex = 0;
-                     windex < NELEMS(widths);
-                     windex++) {
-                        unsigned w = widths[windex];
-                        for (volatile unsigned lindex = 0;
-                             lindex < NELEMS(lsbs);
-                             lindex++) {
-                                volatile unsigned lsb
-                                        = (lsbs[lindex] == 99) ? 64 - w
-                                                               : lsbs[lindex];
+/* test all combination of word, w, lsb, both signed and unsigned */
+for (volatile unsigned i = 0; i < NELEMS(words); i++) {
+uint64_t old = words[i];
+for (volatile unsigned windex = 0;
+windex < NELEMS(widths);
+windex++) {
+unsigned w = widths[windex];
+for (volatile unsigned lindex = 0;
+lindex < NELEMS(lsbs);
+lindex++) {
+volatile unsigned lsb
+= (lsbs[lindex] == 99) ? 64 - w
+                       : lsbs[lindex];
 
-                                /* signed tests */
-                                for (volatile unsigned j = 0;
-                                     j < NELEMS(signs);
-                                     j++) {
-                                        if ((signs[j] == 0 || w > 0)
-                                            && w + lsb <= 64) { /* sensible only */
-                                                NEW(Bitpack_news(old, w, lsb,
-                                                                 signs[j]),
-                                                    nexts);
-                                                if (print) {
-                                                        printf("-- news(0x%016"
-                                                               PRIx64
-                                                               ", %u, %u, %4"
-                                                               PRId64
-                                                               " (0x%04"
-                                                               PRIx64
-                                                               ") == 0x%016"
-                                                               PRIx64 "\n",
-                                                               old, w, lsb,
-                                                               signs[j],
-                                                               signs[j],
-                                                               new);
-                                                        printf("-- Recovered %"
-                                                               PRId64
-                                                               " from 0x%016"
-                                                               PRIx64
-                                                               " (was %"
-                                                               PRId64")\n",
-                                                               Bitpack_gets(new,
-                                                                            w,
-                                                                            lsb),
-                                                               new,
-                                                               signs[j]);
-                                                }
-                                                /* test old parts are unchanged and new part is signs[j] */
-                                                NCHECK(Bitpack_getu(new, lsb, 0) == Bitpack_getu(old, lsb, 0),
-                                                       ("Bitpack_getu(0x%W, %d, 0) == Bitpack_getu(0x%W, %d, 0)",
-                                                        new, lsb, old, lsb),
-                                                       GET64||NEW64);
-                                                NCHECK(Bitpack_getu(new, 64 - w - lsb, w + lsb) ==
-                                                       Bitpack_getu(old, 64 - w - lsb, w + lsb),
-                                                       ("Bitpack_getu(0x%W, %d, %d) == Bitpack_getu(0x%W, %d, %d)",
-                                                        new, 64 - w - lsb, w + lsb, old, 64 - w - lsb, w + lsb),
-                                                       GET64||NEW64);
-                                                NCHECK(Bitpack_gets(new, w, lsb) == signs[j],
-                                                       ("Bitpack_gets(0x%W, %d, %d) == %d", new, w, lsb, signs[j]),
-                                                       GET64||NEW64);
-                                        nexts: (void)0;
-                                        }
-                                }
-                 
-                                /* unsigned tests */
-                                for (volatile unsigned j = 0; j < NELEMS(unsigns); j++) {
-                                        if ((unsigns[j] == 0 || w > 0) && w + lsb <= 64) {
-                                                NEW(Bitpack_newu(old, w, lsb, unsigns[j]), nextu);
-                                                if (print) {
-                                                        printf("-- newu(0x%016" PRIx64 ", %u, %u, %4" PRIu64
-                                                               " (0x%04" PRIx64 ") == 0x%016" PRIx64 "\n",
-                                                               old, w, lsb, unsigns[j], unsigns[j], new);
-                                                }
-                                                /* test old parts are unchanged and new part is unsigns[j] */
-                                                NCHECK(Bitpack_getu(new, lsb, 0) == Bitpack_getu(old, lsb, 0),
-                                                       ("Bitpack_getu(0x%W, %d, 0) == Bitpack_getu(0x%W, %d, 0)",
-                                                        new, lsb, old, lsb),
-                                                       GET64||NEW64);
-                                                NCHECK(Bitpack_getu(new, 64 - w - lsb, w + lsb) ==
-                                                       Bitpack_getu(old, 64 - w - lsb, w + lsb),
-                                                       ("Bitpack_getu(0x%W, %d, %d) == Bitpack_getu(0x%W, %d, %d)",
-                                                        new, 64 - w - lsb, w + lsb, old, 64 - w - lsb, w + lsb),
-                                                       GET64||NEW64);
-                                                NCHECK(Bitpack_getu(new, w, lsb) == unsigns[j],
-                                                       ("Bitpack_gets(0x%W, %d, %d) == %u", new, w, lsb, unsigns[j]),
-                                                       GET64||NEW64);
-                                        nextu: (void)0;
-                                        }
-                                }
-                        }
-                }
+/* signed tests */
+for (volatile unsigned j = 0;
+j < NELEMS(signs);
+j++) {
+if ((signs[j] == 0 || w > 0)
+    && w + lsb <= 64) { /* sensible only */
+        NEW(Bitpack_news(old, w, lsb,
+                         signs[j]),
+            nexts);
+        if (print) {
+                printf("-- news(0x%016"
+                       PRIx64
+                       ", %u, %u, %4"
+                       PRId64
+                       " (0x%04"
+                       PRIx64
+                       ") == 0x%016"
+                       PRIx64 "\n",
+                       old, w, lsb,
+                       signs[j],
+                       signs[j],
+                       new);
+                printf("-- Recovered %"
+                       PRId64
+                       " from 0x%016"
+                       PRIx64
+                       " (was %"
+                       PRId64")\n",
+                       Bitpack_gets(new,
+                                    w,
+                                    lsb),
+                       new,
+                       signs[j]);
         }
+        /* test old parts are unchanged and new part is signs[j] */
+        NCHECK(Bitpack_getu(new, lsb, 0) == Bitpack_getu(old, lsb, 0),
+               ("Bitpack_getu(0x%W, %d, 0) == Bitpack_getu(0x%W, %d, 0)",
+                new, lsb, old, lsb),
+               GET64||NEW64);
+        NCHECK(Bitpack_getu(new, 64 - w - lsb, w + lsb) ==
+               Bitpack_getu(old, 64 - w - lsb, w + lsb),
+               ("Bitpack_getu(0x%W, %d, %d) == Bitpack_getu(0x%W, %d, %d)",
+                new, 64 - w - lsb, w + lsb, old, 64 - w - lsb, w + lsb),
+               GET64||NEW64);
+        NCHECK(Bitpack_gets(new, w, lsb) == signs[j],
+               ("Bitpack_gets(0x%W, %d, %d) == %d", new, w, lsb, signs[j]),
+               GET64||NEW64);
+nexts: (void)0;
+}
+}
+
+/* unsigned tests */
+for (volatile unsigned j = 0; j < NELEMS(unsigns); j++) {
+if ((unsigns[j] == 0 || w > 0) && w + lsb <= 64) {
+        NEW(Bitpack_newu(old, w, lsb, unsigns[j]), nextu);
+        if (print) {
+                printf("-- newu(0x%016" PRIx64 ", %u, %u, %4" PRIu64
+                       " (0x%04" PRIx64 ") == 0x%016" PRIx64 "\n",
+                       old, w, lsb, unsigns[j], unsigns[j], new);
+        }
+        /* test old parts are unchanged and new part is unsigns[j] */
+        NCHECK(Bitpack_getu(new, lsb, 0) == Bitpack_getu(old, lsb, 0),
+               ("Bitpack_getu(0x%W, %d, 0) == Bitpack_getu(0x%W, %d, 0)",
+                new, lsb, old, lsb),
+               GET64||NEW64);
+        NCHECK(Bitpack_getu(new, 64 - w - lsb, w + lsb) ==
+               Bitpack_getu(old, 64 - w - lsb, w + lsb),
+               ("Bitpack_getu(0x%W, %d, %d) == Bitpack_getu(0x%W, %d, %d)",
+                new, 64 - w - lsb, w + lsb, old, 64 - w - lsb, w + lsb),
+               GET64||NEW64);
+        NCHECK(Bitpack_getu(new, w, lsb) == unsigns[j],
+               ("Bitpack_gets(0x%W, %d, %d) == %u", new, w, lsb, unsigns[j]),
+               GET64||NEW64);
+nextu: (void)0;
+}
+}
+}
+}
+}
 }

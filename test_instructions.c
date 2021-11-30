@@ -67,7 +67,8 @@ void test_freeIDs(Memory mem, Registers reg)
     //remap 1
     map_segment(mem, reg, r5, r2);  //r5 = r4 = 1
 
-    printf("Newly mapped segment ID (should be 1): %d\n", get_register(reg, r5));
+    printf("Newly mapped segment ID (should be 1): %d\n", \
+    get_register(reg, r5));
 }
 
 void test_cond_move(Registers reg) {

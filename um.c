@@ -59,15 +59,11 @@ int main(int argc, char *argv[])
  */
 void run_program(Memory mem, Registers reg, uint32_t *pc)
 {
-    uint32_t length = get_length_segment(mem, 0);
-    while (*pc < length) {
+    while (*pc < get_length_segment(mem, 0)) {
         uint32_t word = get_word(mem, 0, *pc);
         Unpacked *u = unpack(word);
         *pc += 1;
         execute(mem, reg, u, pc);
-        if (u->op == LOADP) {
-            length = get_length_segment(mem, 0);
-        }
         free(u);
     }
 }

@@ -135,7 +135,6 @@ uint32_t get_word(Memory mem, uint32_t segmentID, uint32_t offset)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   validate_offset(mem, segmentID, offset);
    
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    return *((uint32_t *)UArray_at(tmp_arr, offset));
@@ -160,7 +159,6 @@ void set_word(Memory mem, uint32_t segmentID, uint32_t offset, uint32_t word)
 {
    assert(mem != NULL);
    validate_seg(mem, segmentID);
-   validate_offset(mem, segmentID, offset);
 
    UArray_T tmp_arr = (UArray_T)Seq_get(mem->seq, segmentID);
    assert(tmp_arr != NULL);
@@ -181,9 +179,6 @@ void set_word(Memory mem, uint32_t segmentID, uint32_t offset, uint32_t word)
 uint32_t get_length_segment(Memory mem, uint32_t segmentID)
 {
    assert(mem != NULL);
-   uint32_t mapped = segment_mapped(mem, segmentID);
-   assert(mapped == 1);
-
    return UArray_length((UArray_T)Seq_get(mem->seq, segmentID));
 }
 
