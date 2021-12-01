@@ -65,7 +65,7 @@ all: um
 ## Linking step (.o -> executable program)
 
 um: registers.o memory.o instructions.o unpack.o read_file.o um.o 
-	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS)
+	$(CC) $(LDFLAGS) $(IFLAGS) $^ -o $@ $(LDLIBS) -01
 
 
 clean:

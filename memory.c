@@ -248,19 +248,3 @@ uint32_t segment_mapped(Memory mem, uint32_t segmentID)
    }
    return 1;
 }
-
-/*
-* Arguments: 
-   Memory object,
-   offset to validate.
-* Purpose: validates offset - ensures it's between 0 and the length of
-   segments.
-* Fails:
-   when offset is out of bounds.
-* Returns: void
-*/
-void validate_offset(Memory mem, uint32_t segmentID, uint32_t offset)
-{
-   assert(offset < (uint32_t)UArray_length((UArray_T) \
-   Seq_get(mem->seq, segmentID)));
-}
